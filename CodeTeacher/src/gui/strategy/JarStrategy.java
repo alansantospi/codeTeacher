@@ -75,19 +75,22 @@ public class JarStrategy extends OpenResourceStrategy {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					ClassLoader baseLoader = ReflectionUtils.getClassLoader(destDir);
+					ClassLoader loader = ReflectionUtils.getClassLoader(destDir);
 					
 					eval.addStudent(folderName);
-					Performance perform = Tester.test(folderName, tests, baseLoader);
 					
-//					Map<String, List<ClassAnalyzer>> fieldTests = TestSet.getFieldTests();
+//					Map<String, List<Analyzer>> fieldTests = TestSet.getFieldTests();
 //					List<ClassAnalyzer> list = fieldTests.get(klazzName);
-//
-//					for (ClassAnalyzer analyzer : list) {
-//						analyzer.setLoader(baseLoader);
-//						analyzer.run();
-//						
-//					}
+					for (String key : tests.keySet()) {
+						List<Analyzer> list = tests.get(key);
+						for (Analyzer a : list) {
+							if (a instanceof ClassAnalyzer) {
+								((ClassAnalyzer) a).setLoader(loader);
+							}
+						}
+					}
+
+					Performance perform = Tester.test(folderName, tests, loader);
 					
 					eval.mergePerformance(perform);
 				} else {

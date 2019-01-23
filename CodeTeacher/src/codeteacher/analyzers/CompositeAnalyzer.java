@@ -43,11 +43,6 @@ public class CompositeAnalyzer<T extends AbstractAnalyzer> extends AbstractAnaly
 		return false;
 	}
 
-	@Override
-	public int getValue() {
-		return 0;
-	}
-	
 	public boolean run() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
 		boolean isError = this.isError();
 		

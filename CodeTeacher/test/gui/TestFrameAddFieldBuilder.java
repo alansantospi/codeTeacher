@@ -1,4 +1,4 @@
-package output;
+package gui;
 
 import codeteacher.analyzers.ClassAnalyzer;
 import codeteacher.analyzers.FieldAnalyzer;

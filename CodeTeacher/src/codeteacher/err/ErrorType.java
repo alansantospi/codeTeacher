@@ -167,7 +167,11 @@ public enum ErrorType implements IErrorType, GuiMsg {
 	METHOD_NOT_PROTECTED("Método não protegido"),
 	METHOD_NOT_PUBLIC("Método não público"), 
 	METHOD_NOT_STATIC("Método não estático"),
-	METHOD_MODIFIER_MISMATCH("Modificador incorreto"),
+	METHOD_MODIFIER_MISMATCH("Método com modificador incorreto"){
+		public String getMessage(){
+			return "O método {0} da classe {1} deveria ser {2}";
+		}
+	},
 	METHOD_NOT_RETURN("Método incorreto"),
 	
 	COMPILATION_PROBLEM("Erro de compilação"){
@@ -188,7 +192,11 @@ public enum ErrorType implements IErrorType, GuiMsg {
 			return "Não foi possível definir a classe {0}";
 		}
 	}, 
-	FIELD_NOT_FINAL("Atributo não final"),
+	FIELD_MOFIDIER_MISMATCH("Atributo com modificador incorreto"){
+		public String getMessage(){
+			return "O atributo {0} da classe {1} deveria ser {2}";
+		}
+	},
 	;
 
 	private String description;

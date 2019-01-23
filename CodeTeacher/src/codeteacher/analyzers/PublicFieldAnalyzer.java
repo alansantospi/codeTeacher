@@ -25,12 +25,7 @@ public class PublicFieldAnalyzer extends FieldModifierAnalyzer {
 	}
 
 	@Override
-	public Error getError() {
-		return new Error(ErrorType.METHOD_NOT_PUBLIC);
-	}
-
-	@Override
-	public String toString() {
+	public String getModifier() {
 		return "public";
 	}
 }

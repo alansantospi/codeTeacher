@@ -1,4 +1,4 @@
-package output;
+package gui;
 
 import java.io.DataInputStream;
 import java.io.InputStream;

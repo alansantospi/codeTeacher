@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+import javax.swing.AbstractSpinnerModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,6 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -30,6 +33,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
@@ -58,6 +62,7 @@ import gui.component.jtreefiltering.example.JTreeUtil;
 import gui.component.jtreefiltering.example.TradingProjectTreeRenderer;
 import gui.component.jtreefiltering.example.TreeFilterDecorator;
 import gui.msg.FrameAddOutputMsg;
+import gui.msg.FrameTestMsg;
 import gui.msg.I18N;
 
 public class FrameAddField extends WebFrame implements ActionListener {
@@ -101,7 +106,6 @@ public class FrameAddField extends WebFrame implements ActionListener {
 	private WebButton btnRemoveField;
 
 	/* new features */
-	private int newNodeSuffix = 1;
 	private static String ADD_COMMAND = "add";
 	private static String REMOVE_COMMAND = "remove";
 	private static String CLEAR_COMMAND = "clear";
@@ -110,12 +114,12 @@ public class FrameAddField extends WebFrame implements ActionListener {
 	private DefaultMutableTreeNode rootNode;
 
 	private WebPanel pnlTestButtons;
-	private JButton btnRun;
+	private WebButton btnRun;
 
 	public FrameAddField() {
 
 		this.thisFrame = this;
-		
+
 		contentPane = new WebPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -408,26 +412,27 @@ public class FrameAddField extends WebFrame implements ActionListener {
 //			rootNode.add(node);
 //		}
 		checkBoxTree = new DynamicWebCheckBoxTree(rootNode);
-		checkBoxTree.setVisibleRowCount(7);
-		
-		JTreeUtil.setTreeExpandedState(checkBoxTree, true);
-        TreeFilterDecorator filterDecorator = TreeFilterDecorator.decorate(checkBoxTree, createUserObjectMatcher());
+//		checkBoxTree.setVisibleRowCount(7);
 
-        checkBoxTree.setCellRenderer(new TradingProjectTreeRenderer(() -> filterDecorator.getFilterField().getText()));
-        
-        JPanel topPanel = new JPanel();
-        topPanel.add(filterDecorator.getFilterField());
-        WebButton expandBtn = new WebButton("Expand All");
-        expandBtn.addActionListener(ae-> {
-            JTreeUtil.setTreeExpandedState(checkBoxTree, true);
-        });
-        topPanel.add(expandBtn);
-        WebButton collapseBtn = new WebButton("Collapse All");
-        collapseBtn.addActionListener(ae-> {JTreeUtil.setTreeExpandedState(checkBoxTree, false);});
-        topPanel.add(collapseBtn);
-        pnlTests.add(topPanel);
-        
-        
+		JTreeUtil.setTreeExpandedState(checkBoxTree, true);
+		TreeFilterDecorator filterDecorator = TreeFilterDecorator.decorate(checkBoxTree, AnalyzerMatcher.create());
+
+		checkBoxTree.setCellRenderer(new TradingProjectTreeRenderer(() -> filterDecorator.getFilterField().getText()));
+
+		JPanel topPanel = new JPanel();
+		topPanel.add(filterDecorator.getFilterField());
+		WebButton expandBtn = new WebButton("Expand All");
+		expandBtn.addActionListener(ae -> {
+			JTreeUtil.setTreeExpandedState(checkBoxTree, true);
+		});
+		topPanel.add(expandBtn);
+		WebButton collapseBtn = new WebButton("Collapse All");
+		collapseBtn.addActionListener(ae -> {
+			JTreeUtil.setTreeExpandedState(checkBoxTree, false);
+		});
+		topPanel.add(collapseBtn);
+		pnlTests.add(topPanel);
+
 		checkBoxTree.setPreferredSize(new Dimension(300, 150));
 		GridBagConstraints gbc_checkBoxTree = new GridBagConstraints();
 		gbc_checkBoxTree.insets = new Insets(0, 0, 5, 5);
@@ -435,7 +440,7 @@ public class FrameAddField extends WebFrame implements ActionListener {
 		gbc_checkBoxTree.fill = GridBagConstraints.BOTH;
 		gbc_checkBoxTree.gridx = 0;
 		gbc_checkBoxTree.gridy = 1;
-		
+
 		JScrollPane scrollTests = new JScrollPane(checkBoxTree);
 		GridBagConstraints gbc_scrollTests = new GridBagConstraints();
 		gbc_scrollTests.gridwidth = 13;
@@ -457,29 +462,6 @@ public class FrameAddField extends WebFrame implements ActionListener {
 		this.pack();
 		this.center();
 	}
-
-	 private static BiPredicate<Object, String> createUserObjectMatcher() {
-	        return (userObject, textToFilter) -> {
-	            if (userObject instanceof AbstractAnalyzer) {
-	            	AbstractAnalyzer aa = (AbstractAnalyzer) userObject;
-	            	
-	            	Class<? extends AbstractAnalyzer> class1 = aa.getClass();
-					if (FieldModifierAnalyzer.class.isAssignableFrom(class1)) {
-	            		FieldModifierAnalyzer fma = (FieldModifierAnalyzer) userObject;
-		                return fma.toString().toLowerCase().contains(textToFilter);
-	            	}
-					
-					if (FieldAnalyzer.class.isAssignableFrom(class1)) {
-						FieldAnalyzer fa = (FieldAnalyzer) userObject;
-		                return fa.getMemberName().toLowerCase().contains(textToFilter) || fa.getType().toLowerCase().contains(textToFilter);
-	            	}
-	                return aa.getMemberName().toLowerCase().contains(textToFilter);
-
-	            } else {
-	                return userObject.toString().toLowerCase().contains(textToFilter);
-	            }
-	        };
-	    }
 
 	public FrameAddField(FieldAnalyzer fieldAnalyzer) {
 		this();
@@ -529,11 +511,11 @@ public class FrameAddField extends WebFrame implements ActionListener {
 		if (ADD_COMMAND.equals(command)) {
 			// Add button clicked
 			WebFrame frame = new WebFrame();
-			frame.getContentPane().add(new PanelAddField2(this));
+//			frame.getContentPane().add(new PanelAddField2(this));
 			frame.pack();
 			frame.center();
 			frame.setVisible(true);
-			
+
 		} else if (REMOVE_COMMAND.equals(command)) {
 			// Remove button clicked
 			removeCurrentNode(checkBoxTree);
@@ -619,7 +601,7 @@ public class FrameAddField extends WebFrame implements ActionListener {
 	public DefaultMutableTreeNode addToTree(Analyzer analyzer) {
 		return addToTree(checkBoxTree.rootNode, analyzer);
 	}
-	
+
 	public DefaultMutableTreeNode addToTree(DefaultMutableTreeNode root, Analyzer analyzer) {
 
 		DefaultMutableTreeNode newNode = checkBoxTree.addObject(root, analyzer, true);
@@ -748,7 +730,7 @@ public class FrameAddField extends WebFrame implements ActionListener {
 					FinalFieldAnalyzer finalFieldAnalyzer = new FinalFieldAnalyzer(fieldAnalyzer);
 					addToTree(childNode, finalFieldAnalyzer);
 				}
-				
+
 //				updateTree(fieldAnalyzer);
 //				DefaultMutableTreeNode root = checkBoxTree.rootNode;
 //				addToTree(root, classAnalyzer);
@@ -769,12 +751,12 @@ public class FrameAddField extends WebFrame implements ActionListener {
 		}
 	}
 
-	private Command buildCommand(Command command, DefaultMutableTreeNode node) {
+	private TestRunner buildCommand(TestRunner command, DefaultMutableTreeNode node) {
 		boolean checkedOrMixed = checkBoxTree.isChecked(node) || checkBoxTree.isMixed(node);
 		if (checkedOrMixed) {
 			AbstractAnalyzer analyzer = (AbstractAnalyzer) node.getUserObject();
 
-			Command slave = new Command(analyzer);
+			TestRunner slave = new TestRunner(analyzer);
 			command.add(slave);
 
 			TreeModel treeModel = checkBoxTree.getModel();
@@ -798,18 +780,18 @@ public class FrameAddField extends WebFrame implements ActionListener {
 			List<DefaultMutableTreeNode> nodes = checkBoxTree.getAllNodes();
 
 			CompositeAnalyzer<AbstractAnalyzer> composite = new CompositeAnalyzer<>();
-			Command command = new Command(composite);
+			TestRunner command = new TestRunner(composite);
 
 			for (DefaultMutableTreeNode node : nodes) {
 				TreeNode parent = node.getParent();
 				if (parent != null && parent.equals(checkBoxTree.rootNode)) {
 					buildCommand(command, node);
-				} 
+				}
 			}
-			
+
 			Performance perform = command.execute();
 			System.out.println(perform);
-			
+
 		}
 	}
 
@@ -820,8 +802,15 @@ public class FrameAddField extends WebFrame implements ActionListener {
 		}
 		return getRootParent(parent);
 	}
-	
+
 	public static void main(String[] args) {
+
+		// Its very important to call this before setting Look & Feel
+		I18N.getVal(FrameTestMsg.ADD_BEHAVIOR);
+
+		// Look and Feel
+		WebLookAndFeel.install();
+
 		FrameAddField frame = new FrameAddField();
 //		frame.pack();
 //		frame.center();

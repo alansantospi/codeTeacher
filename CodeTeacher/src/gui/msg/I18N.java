@@ -5,13 +5,21 @@ import java.util.ResourceBundle;
 
 public class I18N {
 
-	private static Locale vmLocale = Locale.getDefault();
-	private static ResourceBundle bundle = ResourceBundle.getBundle("messages", vmLocale);
-
+	private Locale vmLocale;// = Locale.getDefault();
+	private ResourceBundle bundle;// = ResourceBundle.getBundle("messages", vmLocale);
+	private static I18N instance;
+	
+	private I18N() {
+		vmLocale = Locale.getDefault();
+		bundle = ResourceBundle.getBundle("messages", vmLocale);
+	}
 
 	public static String getVal(GuiMsg msg){
+		if (instance == null) {
+			instance = new I18N();
+		}
 		
 		String key = msg.prefix() + "." + msg.name();
-		return bundle.getString(key);
+		return instance.bundle.getString(key);
 	}
 }

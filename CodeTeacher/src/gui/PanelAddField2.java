@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
+import javax.swing.AbstractSpinnerModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -63,7 +64,7 @@ import gui.msg.I18N;
 
 public class PanelAddField2 extends WebPanel {
 	
-	private FrameAddField previous;
+	private FrameTestField previous;
 	
 	/* Class */
 	private WebPanel pnlClass;
@@ -100,7 +101,7 @@ public class PanelAddField2 extends WebPanel {
 	private WebSpinner spinStatic;
 	private WebSpinner spinVisibility;
 	
-	public PanelAddField2(FrameAddField previous) {
+	public PanelAddField2(FrameTestField previous) {
 		this.previous = previous;
 		create();
 	}
@@ -224,7 +225,7 @@ public class PanelAddField2 extends WebPanel {
 
 		chkFieldStatic = new WebCheckBox(I18N.getVal(STATIC));
 		chkFieldStatic.setHorizontalAlignment(SwingConstants.LEFT);
-		chkFieldStatic.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
+//		chkFieldStatic.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		GridBagConstraints gbc_chkFieldStatic = new GridBagConstraints();
 		gbc_chkFieldStatic.anchor = GridBagConstraints.WEST;
 		gbc_chkFieldStatic.insets = new Insets(0, 0, 5, 5);
@@ -242,7 +243,7 @@ public class PanelAddField2 extends WebPanel {
 
 		chkFieldFinal = new WebCheckBox(I18N.getVal(FINAL));
 		chkFieldFinal.setHorizontalAlignment(SwingConstants.LEFT);
-		chkFieldFinal.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
+//		chkFieldFinal.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		GridBagConstraints gbc_chkFieldFinal = new GridBagConstraints();
 		gbc_chkFieldFinal.anchor = GridBagConstraints.WEST;
 		gbc_chkFieldFinal.gridwidth = 2;
@@ -363,6 +364,7 @@ public class PanelAddField2 extends WebPanel {
 		formatter.setFormat(decimalFormat); 
 		
 		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
+		
 		return webSpinner;
 	}
 	

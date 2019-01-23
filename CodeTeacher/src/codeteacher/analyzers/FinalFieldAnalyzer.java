@@ -26,12 +26,7 @@ public class FinalFieldAnalyzer extends FieldModifierAnalyzer {
 	}
 	
 	@Override
-	public Error getError() {
-		return new Error(ErrorType.FIELD_NOT_FINAL);
-	}
-
-	@Override
-	public String toString() {
+	public String getModifier() {
 		return "final";
 	}
 }

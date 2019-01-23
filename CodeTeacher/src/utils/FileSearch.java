@@ -126,8 +126,11 @@ public class FileSearch {
 		fileSearch.setCaseSensitive(true);
 
 		// try different directory and filename :)
-		String fileName = "TestaInteger.java";
-		fileSearch.searchDirectory(new File("/Users/edina/Downloads/IFMA_CN_2018_1_DSOO-INFO3-M_trabs_Atividade_02/"),
+//		String fileName = "TestaInteger.java";
+//		String path = "/Users/edina/Downloads/IFMA_CN_2018_1_DSOO-INFO3-M_trabs_Atividade_02/";
+		String fileName = "WebSkin.xml";
+		String path = "/Users/edina/Downloads/weblaf-demo-1.28.jar/";
+		fileSearch.searchDirectory(new File(path),
 				fileName);
 
 		int count = fileSearch.getResult().size();

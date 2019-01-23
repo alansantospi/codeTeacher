@@ -54,7 +54,7 @@ public class JarFileSearch {
 		return result;
 	}
 
-	public void searchDirectory(File file, String fileNameToSearch) {
+	public void searchDirectory(File file, String fileNameToSearch, String extension) {
 
 		setFileNameToSearch(fileNameToSearch);
 		
@@ -73,7 +73,7 @@ public class JarFileSearch {
 					JarEntry entry = entries.nextElement();
 					
 					String entryName = entry.getName();
-					if (entryName.endsWith(".class")){
+					if (entryName.endsWith(extension)){
 						boolean match = compare(entryName);
 						if (match) {
 							result.add(entry);
@@ -114,11 +114,16 @@ public class JarFileSearch {
 		fileSearch.setRecursive(true);
 
 		// try different directory and filename :)
-		String fileName = "MetodoGetClass.class";//"TestaInteger.java";
-		String studentDir = "C:\\Users\\edina\\Downloads\\IFMA_CN_2018_1_DSOO-INFO3-M_trabs_Atividade_01\\Andressa da Silva Nogueira\\EntendendoGetClass.jar";
-		File file = new File(studentDir);
+//		String fileName = "MetodoGetClass.class";//"TestaInteger.java";
+//		String dir = "C:\\Users\\edina\\Downloads\\IFMA_CN_2018_1_DSOO-INFO3-M_trabs_Atividade_01\\Andressa da Silva Nogueira\\EntendendoGetClass.jar";
 		
-		fileSearch.searchDirectory(file, fileName);
+		String fileName = "WebSkin.xml";
+//		String fileName = "MANIFEST.MF";
+		String dir = "C:\\Users\\edina\\Downloads\\weblaf-demo-1.28.jar";
+		
+		File file = new File(dir);
+		
+		fileSearch.searchDirectory(file, fileName, ".xml");
 
 		int count = fileSearch.getResult().size();
 		if (count == 0) {

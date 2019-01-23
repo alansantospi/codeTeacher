@@ -1,4 +1,4 @@
-package output;
+package gui;
 
 import codeteacher.Analyzr;
 import codeteacher.StructuralAnalyzr;

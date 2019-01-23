@@ -1,6 +1,4 @@
-package output;
-
-import java.awt.Component;
+package gui;
 
 import javax.swing.JFrame;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -8,9 +6,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import codeteacher.analyzers.ClassAnalyzer;
 import codeteacher.analyzers.FieldAnalyzer;
 import codeteacher.analyzers.FinalFieldAnalyzer;
-import codeteacher.analyzers.ProtectedFieldAnalyzer;
 import codeteacher.analyzers.StaticFieldAnalyzer;
-import gui.FrameAddField;
 import utils.ReflectionUtils;
 
 public class TestFrameAddField {

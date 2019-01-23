@@ -4,18 +4,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
+import codeteacher.err.Error;
+import codeteacher.err.ErrorType;
+
 public abstract class MethodModifierAnalyzer extends SimpleAnalyzer {
 
-	private int value;
-	private String methodName;
-	private Method method;
+	private MethodAnalyzer parent;
 
-	public MethodModifierAnalyzer(String methodName, Method method, int value) {
-			super(); 
-			this.methodName = methodName;
-			this.method = method;
-			this.value = value;
-		}
+	public MethodModifierAnalyzer(MethodAnalyzer parent, int value) {
+		this.parent = parent;
+		this.value = value;
+	}
 
 	@Override
 	public boolean isError()
@@ -26,17 +25,23 @@ public abstract class MethodModifierAnalyzer extends SimpleAnalyzer {
 	protected abstract boolean check();
 
 	@Override
-	public String getMemberName() {
-		return methodName;
-	}
-
-	@Override
 	public int getValue() {
 		return value;
 	}
 
 	public Method getMethod() {
-		return method;
+		return parent.getMethod();
+	}
+	
+	public Error getError() {
+		ErrorType errorType = getErrorType();
+		String className = parent.getParent().getMemberName();
+		String msg = errorType.getMessage(parent.getMemberName(), className);
+		return new Error(errorType, msg, getValue());
+	}
+
+	protected ErrorType getErrorType() {
+		return ErrorType.METHOD_MODIFIER_MISMATCH;
 	}
 
 }

@@ -36,12 +36,7 @@ public class PrivateFieldAnalyzer extends FieldModifierAnalyzer {
 	}
 	
 	@Override
-	public Error getError() {
-		return new Error(ErrorType.METHOD_NOT_PRIVATE);
-	}
-
-	@Override
-	public String toString() {
+	public String getModifier() {
 		return "private";
 	}
 }

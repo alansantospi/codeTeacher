@@ -5,27 +5,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import codeteacher.analyzers.AbstractAnalyzer;
+import codeteacher.analyzers.Analyzer;
 import codeteacher.err.Error;
 import codeteacher.err.ErrorType;
 import codeteacher.result.Performance;
 
-public class Command {
+public class TestRunner {
 
 	protected AbstractAnalyzer current;
-	private List<Command> child;
+	private List<TestRunner> child;
 	private Performance perform;
 	
-	public Command(AbstractAnalyzer analyzer) {
+	public TestRunner(AbstractAnalyzer analyzer) {
 		current = analyzer;
 		child = new ArrayList<>();
 		perform = new Performance("student");
 	}
 	
-	public void add(Command command) {
+	public void add(TestRunner command) {
 		child.add(command);
 	}
 	
 	public Performance execute() {
+		perform = new Performance("student");
 		boolean isError = false;
 		try {
 			isError = current.isError();
@@ -39,16 +41,26 @@ public class Command {
 		}
 		if (isError) {
 			perform.addError(current.getError());
-			for (Command command : child) {
+			for (TestRunner command : child) {
 				perform.addError(command.current.getError());
 			}
 			
 		} else {
-			for (Command command : child) {
+			for (TestRunner command : child) {
 				Performance p = command.execute();
 				perform.addErrors(p.getErrors());
 			}
 		}
 		return perform;
+	}
+	
+	public List<Analyzer> getTests() {
+		List<Analyzer> tests = new ArrayList<>();
+		tests.add(current);
+		for (TestRunner runner : child) {
+//			AbstractAnalyzer curr = runner.current;
+			tests.addAll(runner.getTests());
+		}
+		return tests;
 	}
 }

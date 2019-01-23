@@ -25,12 +25,7 @@ public class ProtectedFieldAnalyzer extends FieldModifierAnalyzer{
 	}
 	
 	@Override
-	public Error getError() {
-		return new Error(ErrorType.METHOD_NOT_PROTECTED);
-	}
-
-	@Override
-	public String toString() {
+	public String getModifier() {
 		return "protected";
 	}
 	

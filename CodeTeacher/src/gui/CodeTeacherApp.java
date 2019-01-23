@@ -5,8 +5,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 
 import com.alee.laf.WebLookAndFeel;
-import com.alee.managers.language.LanguageManager;
-import com.alee.managers.style.StyleManager;
+
+import gui.msg.FrameTestMsg;
+import gui.msg.I18N;
 
 public class CodeTeacherApp {
 
@@ -15,7 +16,7 @@ public class CodeTeacherApp {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void mainX(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -28,11 +29,10 @@ public class CodeTeacherApp {
 //			        StyleManager.setDefaultSkin ( WebLafDemoSkin.class.getCanonicalName () );
 
 			        // Look and Feel
-//			        WebLookAndFeel.install ();
+			        WebLookAndFeel.install ();
 //			        WebLookAndFeel.initializeManagers ();
 
 			        CodeTeacherApp window = new CodeTeacherApp();
-			        window.frame = new FrameTest();
 			        
 					window.frame.setVisible(true);
 				} catch (Exception e) {
@@ -53,9 +53,23 @@ public class CodeTeacherApp {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
+		frame = new FrameTest();
 		frame.setBounds(100, 100, 450, 300);
+		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	public static void main(String[] args) {
+		// Its very important to call this before setting Look & Feel
+		I18N.getVal(FrameTestMsg.ADD_BEHAVIOR);
+		
+		 // Look and Feel
+        WebLookAndFeel.install ();
+//        WebLookAndFeel.initializeManagers ();
+
+        CodeTeacherApp window = new CodeTeacherApp();
+        
+		window.frame.setVisible(true);
+		
 	}
 
 }

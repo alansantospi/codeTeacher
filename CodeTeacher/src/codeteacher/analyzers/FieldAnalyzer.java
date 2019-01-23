@@ -50,21 +50,10 @@ public class FieldAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
 		return !match();
 	}
 	
-//	public boolean run() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
-//		boolean isError = this.isError();
-//		if (!isError) {
-//			for (FieldModifierAnalyzer analyzer : analyzers) {
-//				analyzer.setKlazz(klazz);
-//				if (analyzer.run()) {
-//					isError = true;  
-//				}
-//			}
-//		}
-//		return isError;
-//	}
-
 	public Error getError() {
-		return new Error(ErrorType.FIELD_NOT_FOUND);
+		ErrorType errorType = ErrorType.FIELD_NOT_FOUND;
+		Error error = new Error(errorType, errorType.getMessage(name, parent.getMemberName()), getValue());
+		return error;
 	}
 
 	public boolean isDeclared() {

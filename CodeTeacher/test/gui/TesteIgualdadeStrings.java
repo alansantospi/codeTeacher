@@ -1,5 +1,5 @@
 
-package output;
+package gui;
 
 
 public class TesteIgualdadeStrings {

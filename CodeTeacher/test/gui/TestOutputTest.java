@@ -1,8 +1,4 @@
-package output;
-import gui.FactoryOutputAnalyzr;
-import gui.FrameTest;
-import gui.Project;
-
+package gui;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,20 +10,24 @@ import javax.swing.JFrame;
 
 import codeteacher.Config;
 import codeteacher.analyzers.Analyzer;
+import codeteacher.analyzers.OutputAnalyzer;
 import codeteacher.analyzers.TestSet;
+import gui.FactoryOutputAnalyzr;
+import gui.FrameTest;
+import gui.Project;
 
 
-public class TestOutputPaper {
+public class TestOutputTest {
 //	String studentDir = "C:\\Users\\User\\Google Drive\\IFMA_CN_2018_1_DSOO-INFO3-M_trabs_Atividade_01\\";
-	private static String studentDir = "C:\\Repository";
+	private static String studentDir = "C:\\Users\\edina\\Downloads\\IFMA_CN_2018_1_DSOO-INFO3-M_trabs_Atividade_01\\";
 
 	public static void main(String[] args) {
 		testOutputRegexJar();		
 	}
 	
 	private static void testOutputCaseSensitiveJar() {
-		String projectName = "MyFirstJavaClass";
-		String className = "HelloWorld";
+		String projectName = "EntendendoGetClass";
+		String className = "MetodoGetClass";
 		boolean caseSensitive = false;
 		boolean regex = true;
 		String[] args = new String[0];
@@ -37,8 +37,8 @@ public class TestOutputPaper {
 	}
 	
 	private static void testOutputRegexJar() {
-		String projectName = "HelloWorld";
-		String className = "MyFirstClass";
+		String projectName = "Enten.*GetClas*";
+		String className = "MetodoGetClass";
 		boolean caseSensitive = false;
 		boolean regex = true;
 		String[] args = new String[0];
@@ -65,26 +65,28 @@ public class TestOutputPaper {
 				+ "\n";
 		int value = 25;
 		String[] paramArray = {"java.lang.String[]"};
-		Analyzer analyzer = FactoryOutputAnalyzr.create(modifiers, returnType, methodName, regex, expected, value, args, paramArray);
+		OutputAnalyzer analyzer = FactoryOutputAnalyzr.create(modifiers, returnType, methodName, regex, expected, value, args, paramArray);
+		analyzer.setKlazzRecursive(true);
 		
 		Map<String, List<Analyzer>> tests = new HashMap<String, List<Analyzer>>();
 		tests.put(className, new ArrayList<Analyzer>());
 		tests.get(className).add(analyzer);
 
-		Project proj = new Project(cfg, tests, caseSensitive, regex, true);
+		Project proj = new Project(cfg, tests, regex, caseSensitive, true);
 		
 		TestSet.addTest(className, analyzer);
 		
 		FrameTest frame = new FrameTest(proj);
 		
-		frame.setTitle("Code Teacher");
+		frame.setTitle("TEST OUTPUT");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-//		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-//		frame.setLocationRelativeTo(null);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		frame.setLocationRelativeTo(null);
+		
 
-//		frame.updateButtons();
-//		frame.updateTreeOutput();
-		frame.setVisible(regex);
+		frame.updateButtons();
+		frame.updateTreeOutput();
+		frame.setVisible(true);
 	}
 }

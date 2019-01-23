@@ -28,12 +28,7 @@ public class StaticFieldAnalyzer extends FieldModifierAnalyzer{
 	}
 	
 	@Override
-	public Error getError() {
-		return new Error(ErrorType.METHOD_NOT_STATIC);
-	}
-	
-	@Override
-	public String toString() {
+	public String getModifier() {
 		return "static";
 	}
 

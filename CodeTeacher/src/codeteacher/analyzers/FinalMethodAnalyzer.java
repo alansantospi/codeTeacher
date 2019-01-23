@@ -1,15 +1,11 @@
 package codeteacher.analyzers;
 
-import java.lang.reflect.Method;
-
-import codeteacher.err.Error;
-import codeteacher.err.ErrorType;
 import utils.ReflectionUtils;
 
 public class FinalMethodAnalyzer extends MethodModifierAnalyzer {
 
-	public FinalMethodAnalyzer(String methodName, Method method, int value) {
-		super(methodName, method, value);
+	public FinalMethodAnalyzer(MethodAnalyzer parent, int value) {
+		super(parent, value);
 	}
 
 	@Override
@@ -17,8 +13,4 @@ public class FinalMethodAnalyzer extends MethodModifierAnalyzer {
 		return ReflectionUtils.isFinal(getMethod());
 	}
 
-	@Override
-	public Error getError() {
-		return new Error(ErrorType.METHOD_NOT_FINAL);
-	}
 }
