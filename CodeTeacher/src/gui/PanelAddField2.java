@@ -18,19 +18,18 @@ import static gui.msg.FrameAddOutputMsg.REGEX;
 import static gui.msg.FrameAddOutputMsg.REMOVE;
 import static gui.msg.FrameAddOutputMsg.STATIC;
 
+import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.List;
 
-import javax.swing.AbstractSpinnerModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -46,9 +45,7 @@ import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.spinner.WebSpinner;
-import com.alee.laf.text.WebEditorPane;
 import com.alee.laf.text.WebTextField;
 
 import codeteacher.analyzers.ClassAnalyzer;
@@ -58,7 +55,6 @@ import codeteacher.analyzers.PrivateFieldAnalyzer;
 import codeteacher.analyzers.ProtectedFieldAnalyzer;
 import codeteacher.analyzers.PublicFieldAnalyzer;
 import codeteacher.analyzers.StaticFieldAnalyzer;
-import gui.component.AutoComboBox;
 import gui.component.AutoCompleteBehaviourClassPath;
 import gui.msg.I18N;
 
@@ -90,8 +86,6 @@ public class PanelAddField2 extends WebPanel {
 	private WebCheckBox chkFieldMatchCase;
 	private WebCheckBox chkFieldRegex;
 
-	private AutoComboBox autoComboBox;
-	private WebEditorPane editorPane;
 	private WebButton btnAddField;
 	private WebButton btnRemoveField;
 	private JPanel pnlClassOptions;
@@ -214,7 +208,7 @@ public class PanelAddField2 extends WebPanel {
 				I18N.getVal(PROTECTED), I18N.getVal(DEFAULT) }));
 		pnlFields.add(comboFieldModifier, gbc_comboBox);
 
-		spinVisibility = createSpinner();
+		spinVisibility = createSpinner(spinVisibility);
 		
 		GridBagConstraints gbc_spinVisibility = new GridBagConstraints();
 		gbc_spinVisibility.gridwidth = 2;
@@ -233,7 +227,7 @@ public class PanelAddField2 extends WebPanel {
 		gbc_chkFieldStatic.gridy = 1;
 		pnlFields.add(chkFieldStatic, gbc_chkFieldStatic);
 
-		spinStatic = createSpinner();
+		spinStatic = createSpinner(spinStatic);
 		GridBagConstraints gbc_spinStatic = new GridBagConstraints();
 		gbc_spinStatic.gridwidth = 2;
 		gbc_spinStatic.insets = new Insets(0, 0, 5, 5);
@@ -252,7 +246,7 @@ public class PanelAddField2 extends WebPanel {
 		gbc_chkFieldFinal.gridy = 2;
 		pnlFields.add(chkFieldFinal, gbc_chkFieldFinal);
 
-		spinFinal = createSpinner();
+		spinFinal = createSpinner(spinFinal);
 		GridBagConstraints gbc_spinFinal = new GridBagConstraints();
 		gbc_spinFinal.gridwidth = 2;
 		gbc_spinFinal.insets = new Insets(0, 0, 5, 5);
@@ -279,7 +273,7 @@ public class PanelAddField2 extends WebPanel {
 		txtFieldType.setColumns(10);
 		pnlFields.add(txtFieldType, gbc_txtFieldType);
 
-		spinFieldType = createSpinner();
+		spinFieldType = createSpinner(spinFieldType);
 		GridBagConstraints gbc_spinFieldType = new GridBagConstraints();
 		gbc_spinFieldType.gridwidth = 2;
 		gbc_spinFieldType.insets = new Insets(0, 0, 5, 5);
@@ -312,7 +306,7 @@ public class PanelAddField2 extends WebPanel {
 		gbc_txtFieldName.gridy = 4;
 		pnlFields.add(txtFieldName, gbc_txtFieldName);
 
-		spinFieldName = createSpinner();
+		spinFieldName = createSpinner(spinFieldName);
 		GridBagConstraints gbc_spinFieldName = new GridBagConstraints();
 		gbc_spinFieldName.gridwidth = 2;
 		gbc_spinFieldName.insets = new Insets(0, 0, 5, 5);
@@ -353,8 +347,8 @@ public class PanelAddField2 extends WebPanel {
 
 	}
 
-	private WebSpinner createSpinner() {
-		WebSpinner webSpinner = new WebSpinner(); 
+	private WebSpinner createSpinner(WebSpinner webSpinner) {
+		webSpinner = new WebSpinner(); 
 		webSpinner.setModel(new SpinnerNumberModel(0, 0, 100, 0.1));
 		webSpinner.setEditor(new WebSpinner.NumberEditor(webSpinner, "##.##"));
 		JFormattedTextField txt = ((JSpinner.NumberEditor) webSpinner.getEditor()).getTextField();

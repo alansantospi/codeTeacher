@@ -1,6 +1,5 @@
 package codeteacher.analyzers;
 
-import codeteacher.err.ErrorType;
 import utils.ReflectionUtils;
 
 public class PrivateMethodAnalyzer extends MethodModifierAnalyzer {

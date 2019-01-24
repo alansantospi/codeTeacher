@@ -526,6 +526,10 @@ public final class ReflectionUtils {
 		}
 		return false;
 	}
+	
+	public static boolean isInterface(Class<?> clazz) {
+		 return clazz.isInterface();
+	}
 
 	public static ClassLoader getClassLoader(String dir) {
 		File baseDir = new File(dir);

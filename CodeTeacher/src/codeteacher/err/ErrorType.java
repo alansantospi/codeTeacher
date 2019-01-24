@@ -3,6 +3,7 @@ package codeteacher.err;
 import java.text.MessageFormat;
 
 import gui.msg.GuiMsg;
+import gui.msg.I18N;
 import utils.ReflectionUtils;
 
 public enum ErrorType implements IErrorType, GuiMsg {
@@ -195,6 +196,11 @@ public enum ErrorType implements IErrorType, GuiMsg {
 	FIELD_MOFIDIER_MISMATCH("Atributo com modificador incorreto"){
 		public String getMessage(){
 			return "O atributo {0} da classe {1} deveria ser {2}";
+		}
+	}, 
+	NOT_AN_INTERFACE("Not an interface"){
+		public String getMessage(){
+			return I18N.getVal(this);// "The specified type {0} does not represents an interface";
 		}
 	},
 	;

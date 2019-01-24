@@ -7,6 +7,7 @@ import codeteacher.analyzers.TestAbstractAnalyzer;
 import codeteacher.analyzers.TestClassAnalyzer;
 import codeteacher.analyzers.TestClassAnalyzerParameterized;
 import codeteacher.analyzers.TestFieldAnalyzer;
+import codeteacher.analyzers.TestMethodAnalyzer;
 import codeteacher.analyzers.TestPrivateFieldAnalyzer;
 
 @RunWith(Suite.class)
@@ -15,7 +16,8 @@ import codeteacher.analyzers.TestPrivateFieldAnalyzer;
 	TestClassAnalyzer.class,
 	TestClassAnalyzerParameterized.class,
 	TestFieldAnalyzer.class,
-	TestPrivateFieldAnalyzer.class
+	TestPrivateFieldAnalyzer.class,
+	TestMethodAnalyzer.class,
 })
 public class TestSuiteAnalyzer {
 

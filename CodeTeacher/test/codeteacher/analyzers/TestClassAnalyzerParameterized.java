@@ -92,7 +92,7 @@ public class TestClassAnalyzerParameterized {
     }
 
 	@Test
-	public void test() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public void test_isError() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
 		ClassLoader loader = ReflectionUtils.getClassLoader(rootPath + path);
 		ClassAnalyzer classAnalyzer = new ClassAnalyzer(loader, klazzName, recursive, caseSensitive, regex, 0);
 		boolean status = classAnalyzer.isError();

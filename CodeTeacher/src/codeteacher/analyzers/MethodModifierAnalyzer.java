@@ -29,8 +29,21 @@ public abstract class MethodModifierAnalyzer extends SimpleAnalyzer {
 		return value;
 	}
 
+	public boolean isDeclared() {
+		return parent.isDeclared();
+	}
+	
 	public Method getMethod() {
 		return parent.getMethod();
+	}
+	
+	@Override
+	public String getMemberName() {
+		return parent.getMemberName();
+	}
+	
+	public String getReturnType() {
+		return parent.getReturnType();
 	}
 	
 	public Error getError() {

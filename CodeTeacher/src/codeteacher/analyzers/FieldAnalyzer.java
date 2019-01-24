@@ -88,9 +88,9 @@ public class FieldAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
 			Pattern p = Pattern.compile(name);
 			return p.matcher(aField.getName()).matches(); 
 		} else if (matchCase) {
-			return name.equalsIgnoreCase(aField.getName());
-		} else {
 			return name.equals(aField.getName());
+		} else {
+			return name.equalsIgnoreCase(aField.getName());
 		}
 	}
 	

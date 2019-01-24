@@ -9,20 +9,22 @@ import java.util.regex.Pattern;
 import codeteacher.err.Error;
 import codeteacher.err.ErrorType;
 
-public class MethodAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
+public class MethodAnalyzer extends CompositeAnalyzer<MethodModifierAnalyzer> {
 
 	private ClassAnalyzer parent;
 	private boolean declared;
 	private String returnType;
-	private String methodName;
-	private Class<?>[] parameterTypes;
+	private String[] parameterTypes;
 	private Method method;
 
-	public MethodAnalyzer(ClassAnalyzer parent, boolean declared, String returnType, String methodName, Class<?>... parameterTypes) {
+	public MethodAnalyzer(ClassAnalyzer parent, boolean declared, String returnType, String methodName, boolean matchCase, boolean regex, int value, String... parameterTypes) {
 		this.parent = parent;
 		this.declared = declared;
 		this.returnType = returnType;
-		this.methodName = methodName;
+		this.name = methodName;
+		this.matchCase = matchCase;
+		this.regex = regex;
+		this.value = value;
 		this.parameterTypes = parameterTypes;
 	}
 
@@ -32,13 +34,10 @@ public class MethodAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
 		return !match();
 	}
 
-	public String getMemberName() {
-		return methodName;
-	}
 
 	public Error getError() {
 		ErrorType errorType = ErrorType.METHOD_NOT_FOUND;
-		String msg = errorType.getMessage(methodName, parent.getMemberName());
+		String msg = errorType.getMessage(name, parent.getMemberName());
 		return new Error(errorType, msg, getValue());
 	}
 	
@@ -57,7 +56,9 @@ public class MethodAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
 		}
 		
 		for(Method aMethod : methods) {
-			if (checkName(aMethod) && checkType(aMethod.getReturnType())) {
+			if (checkName(aMethod.getName()) 
+					&& checkType(aMethod.getReturnType())
+					&& checkParams(aMethod.getParameterTypes())) {
 				someMethods.add(aMethod);
 			}
 		}
@@ -69,20 +70,43 @@ public class MethodAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
 		return exists;
 	}
 	
-	private boolean checkName(Method aMethod) {
+	private boolean checkName(String methodName) {
 		if (regex) {
 			Pattern p = Pattern.compile(name);
-			return p.matcher(aMethod.getName()).matches(); 
+			return p.matcher(methodName).matches(); 
 		} else if (matchCase) {
-			return name.equalsIgnoreCase(aMethod.getName());
+			return name.equals(methodName);
 		} else {
-			return name.equals(aMethod.getName());
+			return name.equalsIgnoreCase(methodName);
 		}
 	}
 	
 	private boolean checkType(Class<?> t1) {
 		 
 		return t1.getName().equals(returnType);
+	}
+	
+	private boolean checkParams(Class<?>[] classes) {
+		if (classes.length != parameterTypes.length) {
+			return false;
+		}
+		
+		for (int i = 0; i < parameterTypes.length; i++) {
+			Class<?> paramType = classes[i];
+			if (!paramType.getName().equals(parameterTypes[i])){
+				return false;
+			}
+			
+		}
+		return true;
+	}
+	
+	public String getReturnType() {
+		return returnType;
+	}
+	
+	public boolean isDeclared() {
+		return declared;
 	}
 	
 	public Method getMethod() {

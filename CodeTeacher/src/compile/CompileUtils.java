@@ -49,7 +49,7 @@ public class CompileUtils {
     public static void main(String[] args) throws ClassNotFoundException {
 		
     	
-    	String dir = System.getProperty("user.dir") + "\\test\\data\\TestClassAnalyzer\\";
+    	String dir = System.getProperty("user.dir") + "\\test\\data\\TestPublicMethodAnalyzer\\";
 //		String path = dir + "Endereco.java";
 		compileAll(dir, true);
 		

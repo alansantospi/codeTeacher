@@ -52,7 +52,7 @@ public class TestPrivateFieldAnalyzer {
 	}
 
 	@Test
-	public void test()
+	public void test_isError()
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
 		FieldAnalyzer attrAnalyzr = new FieldAnalyzer(klazz, declared, name, regex, matchCase).addPrivate();
 		boolean actual = attrAnalyzr.isError();

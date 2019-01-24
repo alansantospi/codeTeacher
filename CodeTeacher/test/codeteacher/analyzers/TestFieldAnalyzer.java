@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -15,6 +16,7 @@ import org.junit.runners.Parameterized.Parameters;
 import codeteacher.analyzers.FieldAnalyzer;
 import codeteacher.err.Error;
 import codeteacher.err.ErrorType;
+import utils.ReflectionUtils;
 
 @RunWith(Parameterized.class)
 public class TestFieldAnalyzer {
@@ -26,6 +28,7 @@ public class TestFieldAnalyzer {
 	private boolean regex;
 	private boolean matchCase;
 	private boolean expected;
+	private static String rootPath;
 
 	public TestFieldAnalyzer(String testCase, Class<?> klazz, boolean declared, String name, boolean regex, boolean matchCase, boolean expected) {
 		super();
@@ -38,6 +41,11 @@ public class TestFieldAnalyzer {
 		this.expected = expected;
 	}
 
+	@BeforeClass
+	public static void setUp(){
+		rootPath = System.getProperty("user.dir") + "\\test\\data\\TestFieldAnalyzer\\";
+	}
+	
 	@Parameters
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
@@ -54,16 +62,39 @@ public class TestFieldAnalyzer {
 	@Test
 	public void testIsError()
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
-		FieldAnalyzer attrAnalyzr = new FieldAnalyzer(klazz, declared, name, regex, matchCase);
+		
+		ClassLoader loader = ReflectionUtils.getClassLoader(rootPath);
+		String klazzName = "Aluno";
+		boolean caseSensitive = false;
+		boolean recursive = false;
+		boolean regex = false;
+		int value = 1;
+		
+		ClassAnalyzer classAnalyzer = new ClassAnalyzer(loader, klazzName, caseSensitive, recursive, regex, value);
+		
+		FieldAnalyzer attrAnalyzr = new FieldAnalyzer(classAnalyzer, declared, name, regex, matchCase);
 		boolean actual = attrAnalyzr.isError();
 		assertEquals(testCase, expected, actual);
 	}
 	
 	@Test
 	public void testGetError() {
-		FieldAnalyzer attrAnalyzr = new FieldAnalyzer(klazz, declared, name, regex, matchCase);
+
+		ClassLoader loader = ReflectionUtils.getClassLoader(rootPath);
+		String klazzName = "Aluno";
+		boolean caseSensitive = false;
+		boolean recursive = false;
+		boolean regex = false;
+		int value = 1;
 		
-		assertEquals(testCase, new Error(ErrorType.FIELD_NOT_FOUND).getMessage(), attrAnalyzr.getError().getMessage());
+		ClassAnalyzer classAnalyzer = new ClassAnalyzer(loader, klazzName, caseSensitive, recursive, regex, value);
+		
+		FieldAnalyzer attrAnalyzr = new FieldAnalyzer(classAnalyzer, declared, name, regex, matchCase);
+		
+		ErrorType errorType = ErrorType.FIELD_NOT_FOUND;
+		Error error = new Error(errorType, errorType.getMessage(name, klazzName), 0);
+		
+		assertEquals(testCase, error.getMessage(), attrAnalyzr.getError().getMessage());
 	}
 	
 	@Test

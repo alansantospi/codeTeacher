@@ -73,15 +73,13 @@ import codeteacher.analyzers.ClassAnalyzer;
 import codeteacher.analyzers.CompositeAnalyzer;
 import codeteacher.analyzers.TestSet;
 import codeteacher.analyzers.Tester;
-import codeteacher.behave.BehaviorSet;
 import codeteacher.err.Error;
 import codeteacher.err.ErrorType;
 import codeteacher.result.Evaluation;
 import codeteacher.result.Performance;
-import gui.FrameTest.RunListener;
 import gui.component.ComponentUtils;
+import gui.component.jtreefiltering.AnalyzerTreeRenderer;
 import gui.component.jtreefiltering.example.JTreeUtil;
-import gui.component.jtreefiltering.example.TradingProjectTreeRenderer;
 import gui.component.jtreefiltering.example.TreeFilterDecorator;
 import gui.msg.FrameTestMsg;
 import gui.msg.I18N;
@@ -573,7 +571,7 @@ public class FrameTestField extends WebFrame {
 		JTreeUtil.setTreeExpandedState(checkBoxTree, true);
 		TreeFilterDecorator filterDecorator = TreeFilterDecorator.decorate(checkBoxTree, AnalyzerMatcher.create());
 
-		checkBoxTree.setCellRenderer(new TradingProjectTreeRenderer(() -> filterDecorator.getFilterField().getText()));
+		checkBoxTree.setCellRenderer(new AnalyzerTreeRenderer(() -> filterDecorator.getFilterField().getText()));
 
 		checkBoxTree.setPreferredSize(new Dimension(300, 150));
 
@@ -620,8 +618,8 @@ public class FrameTestField extends WebFrame {
 		addButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				WebFrame frame = new WebFrame();
-				frame.getContentPane().add(new PanelAddField2(thisFrame));
+				WebFrame frame = new FrameAddType(thisFrame);
+//				frame.getContentPane().add(new PanelAddField2(thisFrame));
 				frame.pack();
 				frame.center();
 				frame.setVisible(true);
