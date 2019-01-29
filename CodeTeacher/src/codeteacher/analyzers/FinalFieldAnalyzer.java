@@ -9,7 +9,6 @@ import utils.ReflectionUtils;
 public class FinalFieldAnalyzer extends FieldModifierAnalyzer {
 
 	public FinalFieldAnalyzer(FieldAnalyzer parent) {
-//		super(clazz, declared, name, regex, matchCase);
 		this.parent = parent;
 	}
 	

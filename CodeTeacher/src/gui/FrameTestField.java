@@ -24,6 +24,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +51,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.JTree;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
@@ -57,6 +59,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.apache.commons.io.FileUtils;
 
@@ -548,7 +551,7 @@ public class FrameTestField extends WebFrame {
 		gbc_pnlTests.gridy = 0;
 		panel_3.add(pnlTests, gbc_pnlTests);
 		GridBagLayout gbl_pnlTests = new GridBagLayout();
-		gbl_pnlTests.columnWidths = new int[]{391};
+		gbl_pnlTests.columnWidths = new int[] { 391 };
 		gbl_pnlTests.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0 };
 		gbl_pnlTests.columnWeights = new double[] { 1.0 };
 //		gbl_pnlTests.columnWidths = new int[] { 213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -583,7 +586,7 @@ public class FrameTestField extends WebFrame {
 		gbc_scrollTests.gridx = 0;
 		gbc_scrollTests.gridy = 0;
 		pnlTests.add(scrollTests, gbc_scrollTests);
-		
+
 		JPanel topPanel = new JPanel();
 		scrollTests.setColumnHeaderView(topPanel);
 		topPanel.add(filterDecorator.getFilterField());
@@ -648,7 +651,7 @@ public class FrameTestField extends WebFrame {
 
 		btnRun = new WebButton("Run");
 		pnlTestButtons.add(btnRun);
-		btnRun.addActionListener(new RunListener()); 
+		btnRun.addActionListener(new RunListener());
 	}
 
 	protected void update() {
@@ -728,6 +731,8 @@ public class FrameTestField extends WebFrame {
 			TreeModel model = new DefaultTreeModel(root);
 			dirTree.setModel(model);
 			dirTree.addChildren(root, selFile);
+			JTree tree = dirTree.tree;
+			tree.expandPath(new TreePath(((DefaultTreeModel) tree.getModel()).getRoot()));
 		}
 	}
 
@@ -865,8 +870,8 @@ public class FrameTestField extends WebFrame {
 	}
 
 	private void fillResultTable(Evaluation eval) {
-		resultTable.setModel(new DefaultTableModel(new Object[][] {
-		}, new String[] { I18N.getVal(msg.ALUNO), I18N.getVal(msg.ERROS), I18N.getVal(msg.NOTA) }));
+		resultTable.setModel(new DefaultTableModel(new Object[][] {},
+				new String[] { I18N.getVal(msg.ALUNO), I18N.getVal(msg.ERROS), I18N.getVal(msg.NOTA) }));
 		DefaultTableModel model = (DefaultTableModel) resultTable.getModel();
 
 		Map<String, Performance> perforMap = eval.getPerforMap();

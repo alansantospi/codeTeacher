@@ -35,6 +35,7 @@ public enum ErrorType implements IErrorType, GuiMsg {
 				String type = otherClazz.isInterface() ? "interface" : "classe";
 				String superType = superClazz.isInterface() ? "interface" : "superclasse";
 				
+				
 				if (!superClazzName.equals(otherSuperClazzName)){
 					setMessage("A " + type + " " + otherClazz.getName() + " deve extender a " + superType + " " + superClazz.getName());
 					return true;
@@ -202,7 +203,20 @@ public enum ErrorType implements IErrorType, GuiMsg {
 		public String getMessage(){
 			return I18N.getVal(this);// "The specified type {0} does not represents an interface";
 		}
+	}, 
+	
+	INCORRECT_OUTPRINT("Incorrect outprint"){
+		public String getMessage(){
+			return I18N.getVal(this);
+		}
+	}, 
+	
+	CODE_STYLE_ERROR("CODE STYLE ERROR"){
+		public String getMessage(){
+			return I18N.getVal(this);
+		}
 	},
+	
 	;
 
 	private String description;

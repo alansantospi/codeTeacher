@@ -2,6 +2,7 @@ package codeteacher.analyzers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 
 import codeteacher.err.Error;
@@ -45,6 +46,9 @@ public abstract class MethodModifierAnalyzer extends SimpleAnalyzer {
 	public String getReturnType() {
 		return parent.getReturnType();
 	}
+	
+	public abstract String getModifier();
+		
 	
 	public Error getError() {
 		ErrorType errorType = getErrorType();

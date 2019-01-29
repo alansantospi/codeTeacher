@@ -28,19 +28,20 @@ public class AnalyzerTreeRenderer extends DefaultTreeCellRenderer {
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 		Object userObject = node.getUserObject();
+		
 		if (userObject instanceof MethodAnalyzer) {
 
 			MethodAnalyzer ma = (MethodAnalyzer) userObject;
 			String text = String.format(SPAN_FORMAT, "rgb(0, 0, 150)", renderFilterMatch(node, ma.getReturnType()));
-			text += " [" + String.format(SPAN_FORMAT, "rgb(90, 70, 0)", renderFilterMatch(node, ma.getMemberName()))
+			text += " " + String.format(SPAN_FORMAT, "rgb(0, 0, 150)", renderFilterMatch(node, ma.getMemberName()));
+			text += " [" + String.format(SPAN_FORMAT, "rgb(90, 70, 0)", renderFilterMatch(node, String.valueOf(ma.getValue())))
 					+ "]";
 			this.setText("<html>" + text + "</html>");
 
 		} else if (userObject instanceof MethodModifierAnalyzer) {
 
 			MethodModifierAnalyzer mma = (MethodModifierAnalyzer) userObject;
-			String text = String.format(SPAN_FORMAT, "rgb(0,70,0)", renderFilterMatch(node, mma.getReturnType()));
-			text += " " + String.format(SPAN_FORMAT, "rgb(0, 70, 0)", renderFilterMatch(node, mma.getMemberName()));
+			String text = String.format(SPAN_FORMAT, "rgb(0,70,0)", renderFilterMatch(node, mma.getModifier()));
 			text += " [" + String.format(SPAN_FORMAT, "rgb(90, 70, 0)",
 					renderFilterMatch(node, String.valueOf(mma.getValue()))) + "]";
 			this.setText("<html>" + text + "</html>");

@@ -7,12 +7,20 @@ import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import com.alee.laf.WebLookAndFeel;
+
 import codeteacher.Config;
 import codeteacher.analyzers.Analyzer;
 import codeteacher.analyzers.ClassAnalyzer;
 import codeteacher.analyzers.FieldAnalyzer;
 import codeteacher.analyzers.FinalFieldAnalyzer;
+import codeteacher.analyzers.FinalMethodAnalyzer;
+import codeteacher.analyzers.MethodAnalyzer;
+import codeteacher.analyzers.PrivateMethodAnalyzer;
 import codeteacher.analyzers.StaticFieldAnalyzer;
+import codeteacher.analyzers.StaticMethodAnalyzer;
+import gui.msg.FrameTestMsg;
+import gui.msg.I18N;
 
 public class TestFrameTestField {
 	private static String studentDir = "C:\\Users\\edina\\Downloads\\IFMA_CN_2018_1_DSOO-INFO3-M_trabs_Atividade_01\\";
@@ -51,6 +59,12 @@ public class TestFrameTestField {
 		Map<String, List<Analyzer>> tests = new HashMap<String, List<Analyzer>>();
 		Project proj = new Project(cfg, tests, regex, caseSensitive, true);
 
+		// Its very important to call this before setting Look & Feel
+		I18N.getVal(FrameTestMsg.ADD_BEHAVIOR);
+
+		// Look and Feel
+		WebLookAndFeel.install();
+		
 		FrameTestField frame = new FrameTestField(proj);
 		
 		String klazzName = "TestClass";
@@ -65,14 +79,26 @@ public class TestFrameTestField {
 		FieldAnalyzer fieldAnalyzer = new FieldAnalyzer(classAnalyzer, "String", declared, "staticField", fieldRegex, fieldCase, 3);
 
 		DefaultMutableTreeNode node = frame.addToTree(classAnalyzer);
-		DefaultMutableTreeNode childNode = frame.addToTree(node, fieldAnalyzer);
+		DefaultMutableTreeNode fieldNode = frame.addToTree(node, fieldAnalyzer);
 		
 		StaticFieldAnalyzer staticFieldAnalyzer = new StaticFieldAnalyzer(fieldAnalyzer, 2);
-		frame.addToTree(childNode, staticFieldAnalyzer);
+		frame.addToTree(fieldNode, staticFieldAnalyzer);
 		
 		FinalFieldAnalyzer finalFieldAnalyzer = new FinalFieldAnalyzer(fieldAnalyzer, 1);
-		frame.addToTree(childNode, finalFieldAnalyzer);
+		frame.addToTree(fieldNode, finalFieldAnalyzer);
 
+		MethodAnalyzer methodAnalyzer = new MethodAnalyzer(classAnalyzer, declared, "String", "myMethod", fieldRegex, fieldCase, 3);
+		DefaultMutableTreeNode methodNode = frame.addToTree(node, methodAnalyzer);
+		
+		PrivateMethodAnalyzer privateMethodAnalyzer = new PrivateMethodAnalyzer(methodAnalyzer, 4);
+		frame.addToTree(methodNode, privateMethodAnalyzer);
+		
+		StaticMethodAnalyzer staticMethodAnalyzer = new StaticMethodAnalyzer(methodAnalyzer, 4);
+		frame.addToTree(methodNode, staticMethodAnalyzer);
+		
+		FinalMethodAnalyzer finalMethodAnalyzer = new FinalMethodAnalyzer(methodAnalyzer, 4);
+		frame.addToTree(methodNode, finalMethodAnalyzer);
+		
 		frame.setTitle("TEST FRAME TEST");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();

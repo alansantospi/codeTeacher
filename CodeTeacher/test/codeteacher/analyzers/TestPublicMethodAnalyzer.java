@@ -54,9 +54,9 @@ public class TestPublicMethodAnalyzer {
 		return Arrays.asList(new Object[][] {
 			/* Test case						declared  returnType    methodName	case   regex  value expected paramTypes*/
 			{ "Declared public method.", 			 true, "int", 		"getA",		false, false,  1, 	false,   new String[0]},
-			{ "Declared package method.", 		 	 true, "void", 	"setA",		false, false,  2, 	true,    new String[0]},
+			{ "Declared package method.", 		 	 true, "void", 		"setA",		false, false,  2, 	true,    new String[0]},
 			{ "Declared protected method.", 		 true, "float", 	"getB",		false, false,  2, 	true,    new String[0]},
-			{ "Declared private method.", 		 	 true, "void", 	"setB",		false, false,  2, 	true,    new String[0]},
+			{ "Declared private method.", 		 	 true, "void", 		"setB",		false, false,  2, 	true,    new String[0]},
 //			{ "Declared valid method match case.", 	 true, "void", 		"setVelocidadeAtual",	true,  false,  1, 	false,   new String[]{"float"}},
 //			{ "Declared invalid method match case.", true, "void", 		"setvelocidadeatual",	true,  false,  2, 	true,    new String[]{"float"}},
 //			{ "Declared valid method regex.", 		 true, "void", 		"setVelocidade(Atual)*",false,  true,  1, 	false,   new String[]{"float"}},

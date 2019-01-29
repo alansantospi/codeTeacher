@@ -69,6 +69,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.apache.commons.io.output.ThresholdingOutputStream;
+
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
@@ -92,12 +94,13 @@ import gui.msg.FrameAddOutputMsg;
 import gui.msg.I18N;
 import utils.ClassPathUtils;
 
-public class PanelAddMethod extends WebPanel{
+public class PanelAddMethod extends WebPanel {
 
 	private FrameAddOutputMsg msg = FrameAddOutputMsg.TITLE;
 
 	private boolean editMode;
-	private FrameAddOutput thisFrame;
+	private PanelAddMethod thisPanel;
+	private MethodAnalyzer methodAnalyzer;
 
 //	private JPanel contentPane;
 
@@ -113,7 +116,7 @@ public class PanelAddMethod extends WebPanel{
 
 	private JScrollPane scrollPreview;
 	private JLabel lblPreview;
-	
+
 	private JTextField txtMethodName;
 	private JTextField txtReturnType;
 	private JTable tableParams;
@@ -130,7 +133,7 @@ public class PanelAddMethod extends WebPanel{
 	private String isStatic;
 	private String isFinal;
 	private String isAbstract;
-	
+
 	/* Class */
 	private JPanel pnlClass;
 	private JLabel lblClassName;
@@ -142,7 +145,7 @@ public class PanelAddMethod extends WebPanel{
 	private JCheckBox chkMethodCase;
 	private JCheckBox chkMethodRegex;
 	private JCheckBox chkClassRecursive;
-	
+
 	/* Method */
 	private WebButton btnAddMethod;
 	private WebButton btnRemoveMethod;
@@ -151,7 +154,7 @@ public class PanelAddMethod extends WebPanel{
 	private WebSpinner spinFinal;
 	private WebSpinner spinStatic;
 	private WebSpinner spinVisibility;
-	
+
 	/* Output */
 	private JPanel pnlOuput;
 	private JPanel pnlOutputOptions;
@@ -163,7 +166,7 @@ public class PanelAddMethod extends WebPanel{
 	private JCheckBox chkExtraSpaces;
 	private JCheckBox chkLineBreaks;
 	private JPanel pnlValue;
-	
+
 	private AutoComboBox autoComboBox;
 	private JEditorPane editorPane;
 
@@ -172,8 +175,6 @@ public class PanelAddMethod extends WebPanel{
 	private WebLabel lblMethodModifier;
 
 	private WebLabel lblMethodType;
-
-	private WebTextField txtMethodType;
 
 	private WebLabel lblMethodName;
 
@@ -208,10 +209,11 @@ public class PanelAddMethod extends WebPanel{
 	 */
 	public PanelAddMethod(final FrameTestField previousFrame) {
 		this.previous = previousFrame;
+		this.thisPanel = this;
 		setBounds(100, 100, 742, 552);
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.rowHeights = new int[]{0, 0, 221, 0, 0};
+		gbl_contentPane.rowHeights = new int[] { 0, 0, 221, 0, 0 };
 		setLayout(gbl_contentPane);
 
 		pnlValue = new JPanel();
@@ -337,7 +339,7 @@ public class PanelAddMethod extends WebPanel{
 
 		spinVisibility = new WebSpinner();
 		formatSpinner(spinVisibility);
-		
+
 		GridBagConstraints gbc_spinVisibility = new GridBagConstraints();
 		gbc_spinVisibility.gridwidth = 2;
 		gbc_spinVisibility.insets = new Insets(0, 0, 5, 5);
@@ -417,9 +419,9 @@ public class PanelAddMethod extends WebPanel{
 		gbc_txtMethodType.gridx = 2;
 		gbc_txtMethodType.gridy = 4;
 
-		txtMethodType = new WebTextField();
-		txtMethodType.setColumns(10);
-		pnlMethods.add(txtMethodType, gbc_txtMethodType);
+		txtReturnType = new WebTextField();
+		txtReturnType.setColumns(10);
+		pnlMethods.add(txtReturnType, gbc_txtMethodType);
 
 		spinMethodType = new WebSpinner();
 		formatSpinner(spinMethodType);
@@ -441,9 +443,9 @@ public class PanelAddMethod extends WebPanel{
 		// createAutoSuggestor(txtMethodType, thisFrame);
 		// createAutoComboBox(gbc_txtMethodType);
 		// createAutoComplete(txtMethodType);
-		AutoCompleteBehaviourClassPath autoComplete = new AutoCompleteBehaviourClassPath(txtMethodType);
+		AutoCompleteBehaviourClassPath autoComplete = new AutoCompleteBehaviourClassPath(txtReturnType);
 
-		autoComplete.setInitialPopupSize(new Dimension(txtMethodType.getWidth() + 500, txtMethodType.getHeight()));
+		autoComplete.setInitialPopupSize(new Dimension(txtReturnType.getWidth() + 500, txtReturnType.getHeight()));
 
 		txtMethodName = new WebTextField();
 		txtMethodName.setColumns(10);
@@ -481,20 +483,20 @@ public class PanelAddMethod extends WebPanel{
 
 		btnAddMethod = new WebButton(I18N.getVal(ADD));
 		btnAddMethod.addActionListener(new AddMethodListener());
-		
+
 		chkMethodCase = new JCheckBox(I18N.getVal(msg.CASE_SENSITIVE));
 		GridBagConstraints gbc_chkCaseMethod = new GridBagConstraints();
 		gbc_chkCaseMethod.insets = new Insets(0, 0, 5, 5);
 		gbc_chkCaseMethod.gridx = 2;
 		gbc_chkCaseMethod.gridy = 6;
 		pnlMethods.add(chkMethodCase, gbc_chkCaseMethod);
-		
-				chkMethodRegex = new JCheckBox(I18N.getVal(msg.REGEX));
-				GridBagConstraints gbc_chkRegexMethod = new GridBagConstraints();
-				gbc_chkRegexMethod.insets = new Insets(0, 0, 5, 5);
-				gbc_chkRegexMethod.gridx = 3;
-				gbc_chkRegexMethod.gridy = 6;
-				pnlMethods.add(chkMethodRegex, gbc_chkRegexMethod);
+
+		chkMethodRegex = new JCheckBox(I18N.getVal(msg.REGEX));
+		GridBagConstraints gbc_chkRegexMethod = new GridBagConstraints();
+		gbc_chkRegexMethod.insets = new Insets(0, 0, 5, 5);
+		gbc_chkRegexMethod.gridx = 3;
+		gbc_chkRegexMethod.gridy = 6;
+		pnlMethods.add(chkMethodRegex, gbc_chkRegexMethod);
 		GridBagConstraints gbc_btnAddMethod = new GridBagConstraints();
 		gbc_btnAddMethod.insets = new Insets(0, 0, 5, 5);
 		gbc_btnAddMethod.gridx = 5;
@@ -521,7 +523,8 @@ public class PanelAddMethod extends WebPanel{
 		tabbedPane.addTab("Methods", null, pnlMethods, null);
 		JPanel pnlParams = new JPanel();
 		tabbedPane.addTab(I18N.getVal(PARAMS), null, pnlParams, null);
-		JPanel pnlExceptions = new JPanel();
+		
+		JPanel pnlExceptions = new PanelException();
 		tabbedPane.addTab(I18N.getVal(EXCEPTIONS), null, pnlExceptions, null);
 
 		JScrollPane scrollPane_2 = new JScrollPane();
@@ -529,7 +532,7 @@ public class PanelAddMethod extends WebPanel{
 
 		GridBagLayout gbl_panel2 = new GridBagLayout();
 		gbl_panel2.columnWidths = new int[] { 356, 0, 100 };
-		gbl_panel2.rowHeights = new int[] {1, 0};
+		gbl_panel2.rowHeights = new int[] { 1, 0 };
 		gbl_panel2.columnWeights = new double[] { 1.0, 1.0, 0.0 };
 		gbl_panel2.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		pnlParams.setLayout(gbl_panel2);
@@ -720,7 +723,6 @@ public class PanelAddMethod extends WebPanel{
 		gbc_chkExtraSpaces.gridy = 3;
 		pnlIgnore.add(chkExtraSpaces, gbc_chkExtraSpaces);
 
-
 		textOutput.getDocument().addDocumentListener(new ChangeListener());
 		chkOutputRegex.addActionListener(new UpdateOutputOptions());
 		chkOutputCase.addActionListener(new UpdateOutputOptions());
@@ -810,9 +812,11 @@ public class PanelAddMethod extends WebPanel{
 
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JFrame frame = new FrameAddParam(thisFrame);
-
-				frame.setLocationRelativeTo(null);
+				JFrame frame = new WebFrame();
+				frame.setContentPane(new PanelAddParam(thisPanel));
+				frame.pack();
+				((WebFrame) frame).center();
+				frame.setBounds(100, 100, 610, 452);
 				frame.setVisible(true);
 			}
 		});
@@ -850,7 +854,7 @@ public class PanelAddMethod extends WebPanel{
 
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ComponentUtils.closeFrame(thisFrame);
+//				ComponentUtils.closeFrame(thisFrame);
 			}
 		});
 
@@ -879,16 +883,16 @@ public class PanelAddMethod extends WebPanel{
 		webSpinner.setModel(new SpinnerNumberModel(0, 0, 100, 0.1));
 		webSpinner.setEditor(new WebSpinner.NumberEditor(webSpinner, "##.##"));
 		JFormattedTextField txt = ((JSpinner.NumberEditor) webSpinner.getEditor()).getTextField();
-		
-		NumberFormatter formatter = (NumberFormatter) txt.getFormatter(); 
-		DecimalFormat decimalFormat = new DecimalFormat("0.0"); 
-		formatter.setFormat(decimalFormat); 
-		
+
+		NumberFormatter formatter = (NumberFormatter) txt.getFormatter();
+		DecimalFormat decimalFormat = new DecimalFormat("0.0");
+		formatter.setFormat(decimalFormat);
+
 		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
-		
+
 		return webSpinner;
 	}
-	
+
 	private void createAutoComplete(JTextField txtMethodType) {
 		// Without this, cursor always leaves text Method
 		txtMethodType.setFocusTraversalKeysEnabled(false);
@@ -1090,6 +1094,10 @@ public class PanelAddMethod extends WebPanel{
 		ComponentUtils.addRow(tableParams, paramType, I18N.getVal(msg.PARAM_NAME));
 		updatePreview();
 	}
+	
+	public MethodAnalyzer getMethodAnalyzer() {
+		return methodAnalyzer;
+	}
 
 	public class ChangeListener implements DocumentListener {
 
@@ -1144,13 +1152,14 @@ public class PanelAddMethod extends WebPanel{
 			updateOutputOptions(source);
 		}
 	}
-	
+
 	class AddMethodListener implements ActionListener {
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String className = txtClassName.getText();
 			String methodName = txtMethodName.getText();
-			String methodType = txtMethodType.getText();
+			String methodType = txtReturnType.getText();
 //			String stringValue = txtValue.getText();
 
 //			if (stringValue != null && !stringValue.equals("")) {
@@ -1168,29 +1177,33 @@ public class PanelAddMethod extends WebPanel{
 				boolean recursive = chkClassRecursive.isSelected();
 				int value = 0;
 				ClassAnalyzer classAnalyzer = new ClassAnalyzer(className, recursive, matchCase, regex, value);
-				DefaultMutableTreeNode parentNode = previous.addToTree(classAnalyzer);	
-				
+				DefaultMutableTreeNode parentNode = previous.addToTree(classAnalyzer);
+
 				boolean declared = false;
 				boolean methodRegex = chkMethodRegex.isSelected();
 				boolean methodCase = chkMethodCase.isSelected();
 				int methodValue = spinMethodName.getRound();
 
 				String parameterTypes = "";
-				MethodAnalyzer methodAnalyzer = new MethodAnalyzer(classAnalyzer, declared, methodType, methodName, methodCase, methodRegex, methodValue, parameterTypes);
+				methodAnalyzer = new MethodAnalyzer(classAnalyzer, declared, methodType, methodName,
+						methodCase, methodRegex, methodValue, parameterTypes);
 
 				DefaultMutableTreeNode childNode = previous.addToTree(parentNode, methodAnalyzer);
-				
+
 				String visibility = (String) comboModifier.getSelectedItem();
 				int visibilityValue = spinVisibility.getRound();
 				if (visibility.equals(PRIVATE.toString())) {
-					PrivateMethodAnalyzer privateMethodAnalyzer = new PrivateMethodAnalyzer(methodAnalyzer, visibilityValue);
+					PrivateMethodAnalyzer privateMethodAnalyzer = new PrivateMethodAnalyzer(methodAnalyzer,
+							visibilityValue);
 					previous.addToTree(childNode, privateMethodAnalyzer);
 				} else if (visibility.equals(PROTECTED.toString())) {
-					ProtectedMethodAnalyzer protectedMethodAnalyzer = new ProtectedMethodAnalyzer(methodAnalyzer, visibilityValue);
+					ProtectedMethodAnalyzer protectedMethodAnalyzer = new ProtectedMethodAnalyzer(methodAnalyzer,
+							visibilityValue);
 					previous.addToTree(childNode, protectedMethodAnalyzer);
-					
+
 				} else if (visibility.equals(PUBLIC.toString())) {
-					PublicMethodAnalyzer publicMethodAnalyzer = new PublicMethodAnalyzer(methodAnalyzer, visibilityValue);
+					PublicMethodAnalyzer publicMethodAnalyzer = new PublicMethodAnalyzer(methodAnalyzer,
+							visibilityValue);
 					previous.addToTree(childNode, publicMethodAnalyzer);
 				}
 			}

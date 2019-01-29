@@ -12,5 +12,10 @@ public class FinalMethodAnalyzer extends MethodModifierAnalyzer {
 	protected boolean check() {
 		return ReflectionUtils.isFinal(getMethod());
 	}
+	
+	@Override
+	public String getModifier() {
+		return "final";
+	}
 
 }

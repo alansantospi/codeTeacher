@@ -12,5 +12,10 @@ public class StaticMethodAnalyzer extends MethodModifierAnalyzer {
 	protected boolean check() {
 		return ReflectionUtils.isStatic(getMethod());
 	}
+	
+	@Override
+	public String getModifier() {
+		return "static";
+	}
 
 }

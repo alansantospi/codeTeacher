@@ -18,6 +18,11 @@ public class Error {
 		this.value = type.getValue();
 	}
 	
+	public Error(ErrorType type, int value) {
+		this.type = type;
+		this.value = value;
+	}
+	
 	public Error(ErrorType type, String message, int value) {
 		this(type, message);
 		this.value = value;

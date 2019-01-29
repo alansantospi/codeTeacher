@@ -51,6 +51,10 @@ public class FrameDetailResult extends JFrame {
 	 * 
 	 * @param perform
 	 */
+	public FrameDetailResult(Performance perform, Evaluation eval) {
+		this(null, perform, eval);
+	}
+	
 	public FrameDetailResult(FrameTest parentFrame, Performance perform, Evaluation eval) {
 		this.parentFrame = parentFrame;
 		thisFrame = this;

@@ -12,4 +12,9 @@ public class AbstractMethodAnalyzer extends MethodModifierAnalyzer {
 	protected boolean check() {
 		return ReflectionUtils.isAbstract(getMethod());
 	}
+	
+	@Override
+	public String getModifier() {
+		return "abstract";
+	}
 }

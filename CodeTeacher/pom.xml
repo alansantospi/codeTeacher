@@ -5,6 +5,7 @@
 	<groupId>CodeTeacher</groupId>
 	<artifactId>CodeTeacher</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
@@ -37,6 +38,9 @@
 
 	</build>
 	<dependencies>
+
+
+
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -44,6 +48,25 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- Checkstyle -->
+		<dependency>
+			<groupId>com.puppycrawl.tools</groupId>
+			<artifactId>checkstyle</artifactId>
+			<version>8.17</version>
+		</dependency>
+
+		<!-- <dependency> -->
+		<!-- <groupId>fi.helsinki.cs.tmc</groupId> -->
+		<!-- <artifactId>tmc-checkstyle-runner</artifactId> -->
+		<!-- <version>3.0.3-SNAPSHOT</version> -->
+		<!-- <exclusions> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>com.puppycrawl.tools</groupId> -->
+		<!-- <artifactId>checkstyle</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- </exclusions> -->
+		<!-- </dependency> -->
 	</dependencies>
-	
+
 </project>

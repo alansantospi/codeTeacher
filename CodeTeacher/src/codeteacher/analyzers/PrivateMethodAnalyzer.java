@@ -13,4 +13,8 @@ public class PrivateMethodAnalyzer extends MethodModifierAnalyzer {
 		return ReflectionUtils.isPrivate(getMethod());
 	}
 	
+	@Override
+	public String getModifier() {
+		return "private";
+	}
 }

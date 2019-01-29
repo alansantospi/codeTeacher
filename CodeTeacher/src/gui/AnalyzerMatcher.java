@@ -5,6 +5,8 @@ import java.util.function.BiPredicate;
 import codeteacher.analyzers.AbstractAnalyzer;
 import codeteacher.analyzers.FieldAnalyzer;
 import codeteacher.analyzers.FieldModifierAnalyzer;
+import codeteacher.analyzers.MethodAnalyzer;
+import codeteacher.analyzers.MethodModifierAnalyzer;
 
 public class AnalyzerMatcher {
 
@@ -23,6 +25,17 @@ public class AnalyzerMatcher {
 					FieldAnalyzer fa = (FieldAnalyzer) userObject;
 					return fa.getMemberName().toLowerCase().contains(textToFilter)
 							|| fa.getType().toLowerCase().contains(textToFilter);
+				}
+				
+				if (MethodAnalyzer.class.isAssignableFrom(class1)) {
+					MethodAnalyzer ma = (MethodAnalyzer) userObject;
+					return ma.getMemberName().toLowerCase().contains(textToFilter)
+							|| ma.getReturnType().toLowerCase().contains(textToFilter);
+				}
+				
+				if (MethodModifierAnalyzer.class.isAssignableFrom(class1)) {
+					MethodModifierAnalyzer mma = (MethodModifierAnalyzer) userObject;
+					return mma.getModifier().toLowerCase().contains(textToFilter);
 				}
 				return aa.getMemberName().toLowerCase().contains(textToFilter);
 

@@ -12,5 +12,10 @@ public class ProtectedMethodAnalyzer extends MethodModifierAnalyzer {
 	protected boolean check() {
 		return ReflectionUtils.isProtected(getMethod());
 	}
+	
+	@Override
+	public String getModifier() {
+		return "protected";
+	}
 
 }

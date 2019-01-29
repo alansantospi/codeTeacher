@@ -1,5 +1,7 @@
 package codeteacher.analyzers;
 
+import java.lang.reflect.Modifier;
+
 import utils.ReflectionUtils;
 
 public class PublicMethodAnalyzer extends MethodModifierAnalyzer {
@@ -11,6 +13,11 @@ public class PublicMethodAnalyzer extends MethodModifierAnalyzer {
 	@Override
 	protected boolean check() {
 		return ReflectionUtils.isPublic(getMethod());
+	}
+	
+	@Override
+	public String getModifier() {
+		return "public";
 	}
 	
 }
