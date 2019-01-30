@@ -31,16 +31,17 @@ public class CheckstyleRunner {
 		File rootDir = new File(dir);
 		
 		File[] files = rootDir.listFiles();
+		DefaultConfiguration myCfg = createConfig();
 
 		for (File studentFolder : files) {
 			if (studentFolder.isDirectory()) {
-				run(studentFolder);
+				run(studentFolder, myCfg);
 			}
 		}
 
 	}
 
-	private static void run(File rootDir) throws CheckstyleException {
+	private static void run(File rootDir, DefaultConfiguration cfg) throws CheckstyleException {
 		// Get source directory and check that the project is testable
 //        final File sourceDirectory = getSourceDirectory(projectDirectory);
 		
@@ -60,12 +61,35 @@ public class CheckstyleRunner {
         checker.addListener(listener);
         checker.setModuleClassLoader(Thread.currentThread().getContextClassLoader());
         
-        StyleChecks checks = StyleChecks.google().maxLineLen(120);
-//        Configuration cfg = ConfigurationLoader.loadConfiguration(checks.location, createPropertyResolver(checks));
+        // Configuration
+		checker.configure(cfg);
+		
+        try {
+            // Process
+            checker.process(javaFiles);
+        } catch (CheckstyleException ex) {
+            throw new RuntimeException(
+                    new Exception(
+                            "This is a system error while checking code style.", ex));
+        }
+
+        // Clean up
+        checker.destroy();
         
-//        print(cfg);
-        
-        DefaultConfiguration myCfg = new DefaultConfiguration("CodeTeacher");
+        Performance result = listener.getResult();
+        for (Error err : result.getErrors()) {
+			
+        	
+		}
+        System.out.println(result);
+	}
+
+	private static DefaultConfiguration createConfig() {
+		
+//		 StyleChecks checks = StyleChecks.google().maxLineLen(120);
+//       Configuration cfg = ConfigurationLoader.loadConfiguration(checks.location, createPropertyResolver(checks));
+		
+		DefaultConfiguration myCfg = new DefaultConfiguration("CodeTeacher");
         DefaultConfiguration treeWalker = new DefaultConfiguration("TreeWalker");
         
         DefaultConfiguration paramName = new DefaultConfiguration("ParameterName");
@@ -89,25 +113,7 @@ public class CheckstyleRunner {
         treeWalker.addChild(cyclomaticComplexity);
         
 		myCfg.addChild(treeWalker);
-		checker.configure(myCfg);
-        try {
-            // Process
-            checker.process(javaFiles);
-        } catch (CheckstyleException ex) {
-            throw new RuntimeException(
-                    new Exception(
-                            "This is a system error while checking code style.", ex));
-        }
-
-        // Clean up
-        checker.destroy();
-        
-        Performance result = listener.getResult();
-        for (Error err : result.getErrors()) {
-			
-        	
-		}
-        System.out.println(result);
+		return myCfg;
 	}
 	
 	private static void print(Configuration cfg) {
