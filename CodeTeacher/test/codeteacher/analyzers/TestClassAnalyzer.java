@@ -55,7 +55,7 @@ public class TestClassAnalyzer {
 		ClassAnalyzer classAnalyzer = new ClassAnalyzer(loader, klazzName, recursive, caseSensitive, regex, value);
 		assertFalse(classAnalyzer.isError());
 
-		FieldAnalyzer fieldAnalyzer = new FieldAnalyzer(classAnalyzer, true, "nome", false, false);
+		FieldAnalyzer fieldAnalyzer = new FieldAnalyzer(classAnalyzer, "java.lang.String", true, "nome", false, false);
 		assertFalse(fieldAnalyzer.isError());
 
 		classAnalyzer.add(fieldAnalyzer);
