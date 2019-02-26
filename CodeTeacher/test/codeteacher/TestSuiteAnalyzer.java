@@ -9,6 +9,9 @@ import codeteacher.analyzers.TestClassAnalyzerParameterized;
 import codeteacher.analyzers.TestFieldAnalyzer;
 import codeteacher.analyzers.TestMethodAnalyzer;
 import codeteacher.analyzers.TestPrivateFieldAnalyzer;
+import codeteacher.analyzers.TestPublicFieldAnalyzer;
+import codeteacher.analyzers.TestPublicMethodAnalyzer;
+import codeteacher.analyzers.TestThrowsAnalyzer;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
@@ -18,6 +21,10 @@ import codeteacher.analyzers.TestPrivateFieldAnalyzer;
 	TestFieldAnalyzer.class,
 	TestPrivateFieldAnalyzer.class,
 	TestMethodAnalyzer.class,
+	TestPublicMethodAnalyzer.class,
+	TestThrowsAnalyzer.class,
+	TestPublicFieldAnalyzer.class,
+	
 })
 public class TestSuiteAnalyzer {
 

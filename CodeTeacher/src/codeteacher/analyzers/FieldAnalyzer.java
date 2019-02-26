@@ -84,13 +84,14 @@ public class FieldAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
 	}
 	
 	private boolean checkName(Field aField) {
+		String fieldName = aField.getName();
 		if (regex) {
 			Pattern p = Pattern.compile(name);
-			return p.matcher(aField.getName()).matches(); 
+			return p.matcher(fieldName).matches(); 
 		} else if (matchCase) {
-			return name.equals(aField.getName());
+			return name.equals(fieldName);
 		} else {
-			return name.equalsIgnoreCase(aField.getName());
+			return name.equalsIgnoreCase(fieldName);
 		}
 	}
 	
