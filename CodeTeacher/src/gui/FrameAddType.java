@@ -29,7 +29,7 @@ public class FrameAddType extends WebFrame {
 
 	private static void setupTabbedPane(JTabbedPane tabbedPane) {
 		// Simple tab
-		tabbedPane.addTab("Type", new PanelAddType());
+		tabbedPane.addTab("Type", new PanelAddType(previous));
 
 		// Disabled tab
 		tabbedPane.addTab("Fields", new PanelAddField2(previous));

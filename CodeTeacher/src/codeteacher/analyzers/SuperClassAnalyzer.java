@@ -1,6 +1,7 @@
 package codeteacher.analyzers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import codeteacher.err.Error;
 import codeteacher.err.ErrorType;
@@ -34,5 +35,12 @@ public class SuperClassAnalyzer extends SimpleAnalyzer{
 		Error error = new Error(errorType, errorType.getMessage(type, name, superClassName), getValue());
 		return error;
 	}
-
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("extends" + " ").append(superClassName);
+		
+		return sb.toString();
+	}
 }

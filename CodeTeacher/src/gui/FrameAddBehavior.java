@@ -734,7 +734,7 @@ public class FrameAddBehavior extends JFrame {
 	}
 	
 	public void addParam(String paramType){
-		ComponentUtils.addRow(tableParams, paramType, PARAM_NAME);
+		ComponentUtils.addRow(tableParams, paramType, true, PARAM_NAME);
 		updatePreview();
 	}
 	

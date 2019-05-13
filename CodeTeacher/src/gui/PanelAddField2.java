@@ -56,6 +56,7 @@ import codeteacher.analyzers.ProtectedFieldAnalyzer;
 import codeteacher.analyzers.PublicFieldAnalyzer;
 import codeteacher.analyzers.StaticFieldAnalyzer;
 import gui.component.AutoCompleteBehaviourClassPath;
+import gui.component.ComponentUtils;
 import gui.msg.I18N;
 
 public class PanelAddField2 extends WebPanel {
@@ -208,7 +209,7 @@ public class PanelAddField2 extends WebPanel {
 				I18N.getVal(PROTECTED), I18N.getVal(DEFAULT) }));
 		pnlFields.add(comboFieldModifier, gbc_comboBox);
 
-		spinVisibility = createSpinner(spinVisibility);
+		spinVisibility = ComponentUtils.createSpinner(spinVisibility);
 		
 		GridBagConstraints gbc_spinVisibility = new GridBagConstraints();
 		gbc_spinVisibility.gridwidth = 2;
@@ -227,7 +228,7 @@ public class PanelAddField2 extends WebPanel {
 		gbc_chkFieldStatic.gridy = 1;
 		pnlFields.add(chkFieldStatic, gbc_chkFieldStatic);
 
-		spinStatic = createSpinner(spinStatic);
+		spinStatic = ComponentUtils.createSpinner(spinStatic);
 		GridBagConstraints gbc_spinStatic = new GridBagConstraints();
 		gbc_spinStatic.gridwidth = 2;
 		gbc_spinStatic.insets = new Insets(0, 0, 5, 5);
@@ -246,7 +247,7 @@ public class PanelAddField2 extends WebPanel {
 		gbc_chkFieldFinal.gridy = 2;
 		pnlFields.add(chkFieldFinal, gbc_chkFieldFinal);
 
-		spinFinal = createSpinner(spinFinal);
+		spinFinal = ComponentUtils.createSpinner(spinFinal);
 		GridBagConstraints gbc_spinFinal = new GridBagConstraints();
 		gbc_spinFinal.gridwidth = 2;
 		gbc_spinFinal.insets = new Insets(0, 0, 5, 5);
@@ -273,7 +274,7 @@ public class PanelAddField2 extends WebPanel {
 		txtFieldType.setColumns(10);
 		pnlFields.add(txtFieldType, gbc_txtFieldType);
 
-		spinFieldType = createSpinner(spinFieldType);
+		spinFieldType = ComponentUtils.createSpinner(spinFieldType);
 		GridBagConstraints gbc_spinFieldType = new GridBagConstraints();
 		gbc_spinFieldType.gridwidth = 2;
 		gbc_spinFieldType.insets = new Insets(0, 0, 5, 5);
@@ -306,7 +307,7 @@ public class PanelAddField2 extends WebPanel {
 		gbc_txtFieldName.gridy = 4;
 		pnlFields.add(txtFieldName, gbc_txtFieldName);
 
-		spinFieldName = createSpinner(spinFieldName);
+		spinFieldName = ComponentUtils.createSpinner(spinFieldName);
 		GridBagConstraints gbc_spinFieldName = new GridBagConstraints();
 		gbc_spinFieldName.gridwidth = 2;
 		gbc_spinFieldName.insets = new Insets(0, 0, 5, 5);
@@ -347,21 +348,6 @@ public class PanelAddField2 extends WebPanel {
 
 	}
 
-	private WebSpinner createSpinner(WebSpinner webSpinner) {
-		webSpinner = new WebSpinner(); 
-		webSpinner.setModel(new SpinnerNumberModel(0, 0, 100, 0.1));
-		webSpinner.setEditor(new WebSpinner.NumberEditor(webSpinner, "##.##"));
-		JFormattedTextField txt = ((JSpinner.NumberEditor) webSpinner.getEditor()).getTextField();
-		
-		NumberFormatter formatter = (NumberFormatter) txt.getFormatter(); 
-		DecimalFormat decimalFormat = new DecimalFormat("0.0"); 
-		formatter.setFormat(decimalFormat); 
-		
-		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
-		
-		return webSpinner;
-	}
-	
 	private final class AddFieldListener implements ActionListener {
 		public void actionPerformed(ActionEvent evt) {
 			String className = txtClassName.getText();
@@ -393,7 +379,7 @@ public class PanelAddField2 extends WebPanel {
 				boolean fieldMatchCase = chkFieldMatchCase.isSelected();
 
 				FieldAnalyzer fieldAnalyzer = new FieldAnalyzer(classAnalyzer, fieldType, declared, fieldName,
-						fieldRegex, fieldMatchCase, spinFieldName.getRound());
+						fieldRegex, fieldMatchCase, (Integer) spinFieldName.getValue());
 
 				DefaultMutableTreeNode childNode = previous.addToTree(parentNode, fieldAnalyzer);
 //				classAnalyzer.addField(fieldAnalyzer);
@@ -401,7 +387,7 @@ public class PanelAddField2 extends WebPanel {
 //				DefaultMutableTreeNode childNode = checkBoxTree.addObject(parentNode, fieldAnalyzer);
 
 				String visibility = (String) comboFieldModifier.getSelectedItem();
-				int visibilityValue = spinVisibility.getRound();
+				int visibilityValue = (Integer) spinVisibility.getValue();
 				if (visibility.equals(PRIVATE.toString())) {
 					PrivateFieldAnalyzer privateFieldAnalyzer = new PrivateFieldAnalyzer(fieldAnalyzer, visibilityValue);
 					previous.addToTree(childNode, privateFieldAnalyzer);
@@ -415,13 +401,13 @@ public class PanelAddField2 extends WebPanel {
 				}
 
 				if (chkFieldStatic.isSelected()) {
-					int staticValue = spinVisibility.getRound();
+					int staticValue = (Integer) spinVisibility.getValue();
 					StaticFieldAnalyzer staticFieldAnalyzer = new StaticFieldAnalyzer(fieldAnalyzer, staticValue);
 					previous.addToTree(childNode, staticFieldAnalyzer);
 				}
 
 				if (chkFieldFinal.isSelected()) {
-					int finalValue = spinVisibility.getRound();
+					int finalValue = (Integer) spinVisibility.getValue();
 					FinalFieldAnalyzer finalFieldAnalyzer = new FinalFieldAnalyzer(fieldAnalyzer, finalValue);
 					previous.addToTree(childNode, finalFieldAnalyzer);
 				}

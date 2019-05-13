@@ -1139,7 +1139,7 @@ public class FrameAddOutput extends JFrame {
 	}
 
 	public void addParam(String paramType) {
-		ComponentUtils.addRow(tableParams, paramType, I18N.getVal(msg.PARAM_NAME));
+		ComponentUtils.addRow(tableParams, paramType, true, I18N.getVal(msg.PARAM_NAME));
 		updatePreview();
 	}
 

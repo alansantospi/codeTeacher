@@ -72,7 +72,7 @@ public class PanelException extends WebPanel {
 			public void run() {
 				try {
 					WebFrame frame = new WebFrame();
-					frame.getContentPane().add(new PanelException());
+					frame.getContentPane().add(new PanelException(null));
 					frame.pack();
 					frame.center();
 					frame.setVisible(true);
@@ -89,7 +89,7 @@ public class PanelException extends WebPanel {
 	 * @param previousFrame
 	 * @wbp.parser.constructor
 	 */
-	public PanelException() {
+	public PanelException(DefaultTableModel model) {
 		this.thisPanel = this;
 		setBounds(100, 100, 742, 552);
 		setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -100,7 +100,7 @@ public class PanelException extends WebPanel {
 		gbc_scrollPane_2.insets = new Insets(0, 0, 5, 5);
 		gbc_scrollPane_2.gridx = 0;
 		gbc_scrollPane_2.gridy = 0;
-		thisPanel.add(scrollPane_2, gbc_scrollPane_2);
+//		thisPanel.add(scrollPane_2, gbc_scrollPane_2);
 
 		GridBagLayout gbl_pnlExceptions = new GridBagLayout();
 		gbl_pnlExceptions.columnWidths = new int[] { 356, 0, 100 };
@@ -121,11 +121,13 @@ public class PanelException extends WebPanel {
 		scrollExceptions = new JScrollPane();
 		scrollParams.setViewportView(scrollExceptions);
 
-		DefaultTableModel model = new DefaultTableModel();
+		if (model == null){
+			model = new DefaultTableModel();
+			model.addColumn("Name");
+			model.addColumn("Value");
+		}
 		tableExceptions = new JTable(model);
 //		tableExceptions.setToolTipText(I18N.getVal(""));
-		model.addColumn("Name");
-		model.addColumn("Value");
 
 		tableExceptions.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		tableExceptions.getTableHeader().setReorderingAllowed(false);
@@ -229,9 +231,9 @@ public class PanelException extends WebPanel {
 		gbc_btnOk.gridy = 2;
 		add(btnOk, gbc_btnOk);
 	}
-	
-	public void addException(String name, boolean matchCase, boolean regex, int value) {
-		ComponentUtils.addRow(tableExceptions, name, String.valueOf(value));
-		ThrowsAnalyzer throwsAnalyzer = new ThrowsAnalyzer(null, matchCase, regex, value, name);
+
+	public void addException(String name, boolean matchCase, boolean regex, Double value) {
+		ComponentUtils.addRow(tableExceptions, name, false, String.valueOf(value));
+		ThrowsAnalyzer throwsAnalyzer = new ThrowsAnalyzer(null, matchCase, regex, value.intValue(), name);
 	}
 }

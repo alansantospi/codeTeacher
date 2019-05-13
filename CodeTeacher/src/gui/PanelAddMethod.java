@@ -524,7 +524,7 @@ public class PanelAddMethod extends WebPanel {
 		JPanel pnlParams = new JPanel();
 		tabbedPane.addTab(I18N.getVal(PARAMS), null, pnlParams, null);
 		
-		JPanel pnlExceptions = new PanelException();
+		JPanel pnlExceptions = new PanelException(null);
 		tabbedPane.addTab(I18N.getVal(EXCEPTIONS), null, pnlExceptions, null);
 
 		JScrollPane scrollPane_2 = new JScrollPane();
@@ -1091,7 +1091,7 @@ public class PanelAddMethod extends WebPanel {
 	}
 
 	public void addParam(String paramType) {
-		ComponentUtils.addRow(tableParams, paramType, I18N.getVal(msg.PARAM_NAME));
+		ComponentUtils.addRow(tableParams, paramType, true, I18N.getVal(msg.PARAM_NAME));
 		updatePreview();
 	}
 	

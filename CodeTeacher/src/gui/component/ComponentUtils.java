@@ -1,9 +1,17 @@
 package gui.component;
 
+import java.text.DecimalFormat;
+
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.text.NumberFormatter;
+
+import com.alee.laf.spinner.WebSpinner;
 
 public class ComponentUtils {
 
@@ -35,10 +43,13 @@ public class ComponentUtils {
 		table.setRowSelectionInterval(rowToRemove, rowToRemove);
 	}
 	
-	public static void addRow(final JTable table, String paramType, String paramName){
+	public static void addRow(final JTable table, String paramType, boolean countRows, String paramName){
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		int rowCount = model.getRowCount()+1;
-		model.addRow(new String[] {paramType, paramName + String.valueOf(rowCount)});
+		if (countRows) {
+			int rowCount = model.getRowCount()+1;
+			paramName = paramName + String.valueOf(rowCount);
+		}
+		model.addRow(new String[] {paramType, paramName});
 		table.setModel(model);
 	}
 	
@@ -46,4 +57,18 @@ public class ComponentUtils {
 		frame.dispose();
 	}
 
+	public static WebSpinner createSpinner(WebSpinner webSpinner) {
+		webSpinner = new WebSpinner(); 
+		webSpinner.setModel(new SpinnerNumberModel(0, 0, 100, 0.1));
+		webSpinner.setEditor(new WebSpinner.NumberEditor(webSpinner, "##.##"));
+		JFormattedTextField txt = ((JSpinner.NumberEditor) webSpinner.getEditor()).getTextField();
+		
+		NumberFormatter formatter = (NumberFormatter) txt.getFormatter(); 
+		DecimalFormat decimalFormat = new DecimalFormat("0.0"); 
+		formatter.setFormat(decimalFormat); 
+		
+		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
+		
+		return webSpinner;
+	}
 }

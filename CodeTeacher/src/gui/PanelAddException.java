@@ -11,16 +11,20 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
+import com.alee.laf.panel.WebPanel;
 import com.alee.laf.spinner.WebSpinner;
 
-import codeteacher.analyzers.MethodAnalyzer;
-import codeteacher.analyzers.ThrowsAnalyzer;
+import gui.component.ComponentUtils;
 import gui.msg.I18N;
 
 public class PanelAddException extends JPanel {
@@ -32,20 +36,21 @@ public class PanelAddException extends JPanel {
 	private JLabel lblValue;
 	private WebSpinner spinValue;
 	private JButton btnOk;
-	
-	private PanelException previous;
 
-	public PanelAddException(PanelException previous) {
+	private WebPanel previous;
+	private JButton btnCancel;
+
+	public PanelAddException(WebPanel previous) {
 		this.previous = previous;
 		this.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		GridBagLayout gbl_pnlClass = new GridBagLayout();
-		gbl_pnlClass.columnWidths = new int[] { 139, 295, 0, 0, 47, 52, 0 };
-		gbl_pnlClass.rowHeights = new int[] { 63, 0, 0, 0 };
-		gbl_pnlClass.columnWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gbl_pnlClass.columnWidths = new int[] { 59, 0, 124, 0, 0, 0, 0 };
+		gbl_pnlClass.rowHeights = new int[] { 37, 0, 0, 0 };
+		gbl_pnlClass.columnWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
 		gbl_pnlClass.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		this.setLayout(gbl_pnlClass);
 
-		lblName = new JLabel("Exception");
+		lblName = new JLabel("Name");
 		lblName.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_lblClassname = new GridBagConstraints();
 		gbc_lblClassname.insets = new Insets(0, 0, 5, 5);
@@ -56,55 +61,69 @@ public class PanelAddException extends JPanel {
 		txtName = new JTextField();
 		txtName.setColumns(10);
 		GridBagConstraints gbc_txtClassName = new GridBagConstraints();
+		gbc_txtClassName.gridwidth = 3;
 		gbc_txtClassName.insets = new Insets(0, 0, 5, 5);
 		gbc_txtClassName.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtClassName.gridx = 1;
 		gbc_txtClassName.gridy = 0;
 		this.add(txtName, gbc_txtClassName);
 
-		chkMatchCase = new JCheckBox(I18N.getVal(CASE_SENSITIVE));
-		GridBagConstraints gbc_chkClassMatchCase = new GridBagConstraints();
-		gbc_chkClassMatchCase.insets = new Insets(0, 0, 5, 5);
-		gbc_chkClassMatchCase.gridx = 2;
-		gbc_chkClassMatchCase.gridy = 0;
-		this.add(chkMatchCase, gbc_chkClassMatchCase);
-
-		chkRegex = new JCheckBox(I18N.getVal(REGEX));
-		GridBagConstraints gbc_chkClassRegex = new GridBagConstraints();
-		gbc_chkClassRegex.insets = new Insets(0, 0, 5, 5);
-		gbc_chkClassRegex.gridx = 3;
-		gbc_chkClassRegex.gridy = 0;
-		this.add(chkRegex, gbc_chkClassRegex);
-
 		lblValue = new JLabel("Value");
 		GridBagConstraints gbc_lblValue = new GridBagConstraints();
 		gbc_lblValue.insets = new Insets(0, 0, 5, 5);
-		gbc_lblValue.gridx = 0;
-		gbc_lblValue.gridy = 1;
+		gbc_lblValue.gridx = 4;
+		gbc_lblValue.gridy = 0;
 		this.add(lblValue, gbc_lblValue);
 
-		spinValue = new WebSpinner();
+		spinValue = ComponentUtils.createSpinner(spinValue);
+//		spinValue.setModel(new SpinnerNumberModel(new Float(0), null, null, new Float(1)));
 		GridBagConstraints gbc_txtValue = new GridBagConstraints();
-		gbc_txtValue.insets = new Insets(0, 0, 5, 5);
+		gbc_txtValue.insets = new Insets(0, 0, 5, 0);
 		gbc_txtValue.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txtValue.gridx = 1;
-		gbc_txtValue.gridy = 1;
+		gbc_txtValue.gridx = 5;
+		gbc_txtValue.gridy = 0;
 		this.add(spinValue, gbc_txtValue);
-		
+
+		chkMatchCase = new JCheckBox(I18N.getVal(CASE_SENSITIVE));
+		GridBagConstraints gbc_chkClassMatchCase = new GridBagConstraints();
+		gbc_chkClassMatchCase.insets = new Insets(0, 0, 5, 5);
+		gbc_chkClassMatchCase.gridx = 1;
+		gbc_chkClassMatchCase.gridy = 1;
+		this.add(chkMatchCase, gbc_chkClassMatchCase);
+
 		btnOk = new JButton("Ok");
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				boolean matchCase = chkMatchCase.isSelected();
 				boolean regex = chkRegex.isSelected();
-				Object value = spinValue.getValue();
 				String name = txtName.getText();
 				
-				previous.addException(name, matchCase, regex, (Integer) value);
+				Object value = spinValue.getValue();
+				
+//				JComponent editor = spinValue.getEditor();
+//				JFormattedTextField txtField = ((JSpinner.NumberEditor) editor).getTextField();
+//				String txt = txtField.getText();
+				if (previous instanceof PanelException) {
+					((PanelException) previous).addException(name, matchCase, regex, (Double) value);
+				} // else if (previous instanceof )
 			}
 		});
+
+		chkRegex = new JCheckBox(I18N.getVal(REGEX));
+		GridBagConstraints gbc_chkClassRegex = new GridBagConstraints();
+		gbc_chkClassRegex.insets = new Insets(0, 0, 5, 5);
+		gbc_chkClassRegex.gridx = 2;
+		gbc_chkClassRegex.gridy = 1;
+		this.add(chkRegex, gbc_chkClassRegex);
+
+		btnCancel = new JButton("Cancel");
+		GridBagConstraints gbc_btnCancel = new GridBagConstraints();
+		gbc_btnCancel.insets = new Insets(0, 0, 0, 5);
+		gbc_btnCancel.gridx = 4;
+		gbc_btnCancel.gridy = 2;
+		add(btnCancel, gbc_btnCancel);
 		GridBagConstraints gbc_btnOk = new GridBagConstraints();
-		gbc_btnOk.insets = new Insets(0, 0, 0, 5);
-		gbc_btnOk.gridx = 3;
+		gbc_btnOk.gridx = 5;
 		gbc_btnOk.gridy = 2;
 		add(btnOk, gbc_btnOk);
 	}
