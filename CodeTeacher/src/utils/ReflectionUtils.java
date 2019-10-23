@@ -566,6 +566,22 @@ public final class ReflectionUtils {
 		return isProtected(klazz, memberName, declared, regex, matchCase, ClassMember.ALL);
 	}
 	
+	/**
+	 * Check if a member is package-private. 
+	 * Basically, a package-private member has no access modifier.
+	 * @param klazz
+	 * @param memberName
+	 * @param declared
+	 * @param regex
+	 * @param matchCase
+	 * @return
+	 */
+	public static boolean isPackagePrivate(Class<?> klazz, String memberName, boolean declared, boolean regex,
+			boolean matchCase) {
+		return isPackagePrivate(klazz, memberName, declared, regex, matchCase, ClassMember.ALL);
+	}
+	
+	
 	public static boolean isStatic(Class<?> klazz, String memberName, boolean declared, boolean regex,
 			boolean matchCase) {
 		return isStatic(klazz, memberName, declared, regex, matchCase, ClassMember.ALL);
@@ -635,6 +651,18 @@ public final class ReflectionUtils {
 			}
 		}
 		return isProtected;
+	}
+	
+	public static boolean isPackagePrivate(Class<?> klazz, String memberName, boolean declared, boolean regex, boolean matchCase, ClassMember classMember) {
+		Collection<Member> members = getMembers(klazz, memberName, declared, regex, matchCase, classMember);
+		boolean isPackagePrivate = false;
+		for (Member member : members) {
+			isPackagePrivate = isPackagePrivate(member);
+			if (!isPackagePrivate) {
+				break;
+			}
+		}
+		return isPackagePrivate;
 	}
 	
 	public static boolean isStatic(Class<?> klazz, String memberName, boolean declared, boolean regex, boolean matchCase, ClassMember classMember) {
@@ -728,6 +756,15 @@ public final class ReflectionUtils {
 		int mod = member.getModifiers();
 		return Modifier.isProtected(mod);
 	}
+	
+	public static boolean isPackagePrivate(Member member) {
+		int mod = member.getModifiers();
+		
+		boolean isPrivate = Modifier.isPrivate(mod);
+		boolean isPublic = Modifier.isPublic(mod);
+		boolean isProtected = Modifier.isProtected(mod);
+		return !(isPrivate || isPublic || isProtected);
+	}
 
 	public static boolean isStatic(Member member) {
 		int mod = member.getModifiers();
@@ -787,5 +824,9 @@ public final class ReflectionUtils {
 			}
 		}
 		return fields;
+	}
+	
+	public static boolean packageExists(String packagePath) {
+	  return Thread.currentThread().getContextClassLoader().getResource(packagePath) != null;
 	}
 }

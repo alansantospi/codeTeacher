@@ -2,15 +2,11 @@ package gui;
 
 import static gui.msg.FrameAddOutputMsg.ADD;
 import static gui.msg.FrameAddOutputMsg.CLEAR;
-import static gui.msg.FrameAddOutputMsg.MSG_PARAMS;
-import static gui.msg.FrameAddOutputMsg.PARAM_NAME_LABEL;
-import static gui.msg.FrameAddOutputMsg.PARAM_TYPE_LABEL;
 import static gui.msg.FrameAddOutputMsg.REMOVE;
 import static gui.msg.FrameAddOutputMsg.UP;
 
 import java.awt.Container;
 import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -18,25 +14,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.rootpane.WebFrame;
 
+import codeteacher.analyzers.FieldAnalyzer;
 import codeteacher.analyzers.MethodAnalyzer;
 import codeteacher.analyzers.ThrowsAnalyzer;
-import gui.component.AutoComboBox;
 import gui.component.ComponentUtils;
+import gui.component.table.FieldAnalyzerModel;
 import gui.msg.FrameAddOutputMsg;
 import gui.msg.I18N;
 
@@ -52,12 +44,12 @@ public class PanelException extends WebPanel {
 	
 	private JPanel pnlControlButtons;
 	private GridBagLayout gbl_pnlControlButtons;
-	private JButton btnAdd;
+	protected JButton btnAdd;
 	private JButton btnRemove;
 	private JButton btnClear;
 	private JButton btnUp;
 	private JButton btnDown;
-	private JButton btnOk;
+	protected JButton btnOk;
 	private JButton btnCancel;
 
 	private JTable tableExceptions;
@@ -89,7 +81,7 @@ public class PanelException extends WebPanel {
 	 * @param previousFrame
 	 * @wbp.parser.constructor
 	 */
-	public PanelException(DefaultTableModel model) {
+	public PanelException(AbstractTableModel model) {
 		this.thisPanel = this;
 		setBounds(100, 100, 742, 552);
 		setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -123,8 +115,8 @@ public class PanelException extends WebPanel {
 
 		if (model == null){
 			model = new DefaultTableModel();
-			model.addColumn("Name");
-			model.addColumn("Value");
+			((DefaultTableModel) model).addColumn("Name");
+			((DefaultTableModel) model).addColumn("Value");
 		}
 		tableExceptions = new JTable(model);
 //		tableExceptions.setToolTipText(I18N.getVal(""));
@@ -149,15 +141,15 @@ public class PanelException extends WebPanel {
 		pnlButtons.setLayout(gbl_pnlButtons);
 
 		btnAdd = new JButton(I18N.getVal(ADD));
-		btnAdd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				WebFrame frame = new WebFrame();
-				frame.setContentPane(new PanelAddException(thisPanel));
-				frame.pack();
-				frame.center();
-				frame.setVisible(true);
-			}
-		});
+//		btnAdd.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				WebFrame frame = new WebFrame();
+//				frame.setContentPane(new PanelAddException(thisPanel));
+//				frame.pack();
+//				frame.center();
+//				frame.setVisible(true);
+//			}
+//		});
 		GridBagConstraints gbc_btnCancelar = new GridBagConstraints();
 		gbc_btnCancelar.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnCancelar.insets = new Insets(0, 0, 5, 0);
@@ -218,12 +210,10 @@ public class PanelException extends WebPanel {
 					
 					methodAnalyzer = owner.getMethodAnalyzer();
 					if (methodAnalyzer != null) {
-						ThrowsAnalyzer throwsAnalyzer = new ThrowsAnalyzer(methodAnalyzer, false, false, Integer.valueOf(value), name);
+						ThrowsAnalyzer throwsAnalyzer = new ThrowsAnalyzer(methodAnalyzer, name, false, false, Integer.valueOf(value));
 						Container parent = getParent().getParent();
 					}
-					
 				}
-				
 			}
 		});
 		GridBagConstraints gbc_btnOk = new GridBagConstraints();
@@ -234,6 +224,16 @@ public class PanelException extends WebPanel {
 
 	public void addException(String name, boolean matchCase, boolean regex, Double value) {
 		ComponentUtils.addRow(tableExceptions, name, false, String.valueOf(value));
-		ThrowsAnalyzer throwsAnalyzer = new ThrowsAnalyzer(null, matchCase, regex, value.intValue(), name);
+		ThrowsAnalyzer throwsAnalyzer = new ThrowsAnalyzer(null, name, matchCase, regex, value.intValue());
+	}
+	
+	public void addAnalyzer(FieldAnalyzer a) {
+		FieldAnalyzerModel model = (FieldAnalyzerModel) tableExceptions.getModel();
+		model.addRow(a);
+		tableExceptions.setModel(model);
+	}
+	
+	public FieldAnalyzerModel getModel() {
+		return (FieldAnalyzerModel) tableExceptions.getModel();
 	}
 }

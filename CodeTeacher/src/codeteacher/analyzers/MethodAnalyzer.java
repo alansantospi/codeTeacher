@@ -1,18 +1,17 @@
 package codeteacher.analyzers;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import codeteacher.err.Error;
 import codeteacher.err.ErrorType;
 
-public class MethodAnalyzer extends CompositeAnalyzer<MethodModifierAnalyzer> {
+public class MethodAnalyzer extends MemberAnalyzer {
 
-	private ClassAnalyzer parent;
-	private boolean declared;
 	private String returnType;
 	private String[] parameterTypes;
 	private Method method;
@@ -28,8 +27,11 @@ public class MethodAnalyzer extends CompositeAnalyzer<MethodModifierAnalyzer> {
 		this.parameterTypes = parameterTypes;
 	}
 
-	public boolean isError()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public MethodAnalyzer() {
+		
+	}
+	
+	public boolean isError() {
 
 		return !match();
 	}
@@ -37,7 +39,7 @@ public class MethodAnalyzer extends CompositeAnalyzer<MethodModifierAnalyzer> {
 
 	public Error getError() {
 		ErrorType errorType = ErrorType.METHOD_NOT_FOUND;
-		String msg = errorType.getMessage(name, parent.getMemberName());
+		String msg = errorType.getMessage(toString(), parent.getMemberName());
 		return new Error(errorType, msg, getValue());
 	}
 	
@@ -111,5 +113,28 @@ public class MethodAnalyzer extends CompositeAnalyzer<MethodModifierAnalyzer> {
 	
 	public Method getMethod() {
 		return method;
+	}
+	
+	public void setParamTypes(String[] paramTypes) {
+		this.parameterTypes = paramTypes;
+	}
+	
+	@Override
+	public AbstractAnalyzer getParent() {
+		return parent;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(name).append("(");
+		List<String> paramList = Arrays.asList(parameterTypes);
+		Iterator<String> iter = paramList.iterator();
+		while (iter.hasNext()) {
+			builder.append(iter.next());
+			if (iter.hasNext()) builder.append(", ");
+		}
+		builder.append(")");
+		return builder.toString();
 	}
 }

@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import codeteacher.err.Error;
 import codeteacher.err.ErrorType;
 
-public abstract class FieldModifierAnalyzer extends SimpleAnalyzer {
+public abstract class FieldModifierAnalyzer extends ModifierAnalyzer {
 	
 	protected FieldAnalyzer parent;
 	
@@ -36,13 +36,13 @@ public abstract class FieldModifierAnalyzer extends SimpleAnalyzer {
 	
 	@Override
 	public Error getError() {
-		ErrorType errorType = ErrorType.FIELD_MOFIDIER_MISMATCH;
-		String message = errorType.getMessage(name, parent.getMemberName(), getModifier());
+		ErrorType errorType = ErrorType.FIELD_MODIFIER_MISMATCH;
+		String message = errorType.getMessage(parent.getMemberName(), parent.getParentName(), getModifier());
 		Error error = new Error(errorType, message, getValue());
 		return error;
 	}
 
-	protected abstract String getModifier();
+	public abstract String getModifier();
 	
 	@Override
 	public String toString() {

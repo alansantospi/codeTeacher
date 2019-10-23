@@ -38,6 +38,10 @@ public abstract class AbstractAnalyzer implements Analyzer {
 		return name;
 	}
 	
+	public void setMemberName(String memberName) {
+		this.name = memberName;
+	}
+	
 	public AbstractAnalyzer getParent() {
 		return parent;
 	}

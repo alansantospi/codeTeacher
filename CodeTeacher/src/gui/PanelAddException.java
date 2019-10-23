@@ -11,19 +11,19 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.spinner.WebSpinner;
 
+import codeteacher.analyzers.Analyzer;
+import codeteacher.analyzers.ClassAnalyzer;
+import codeteacher.analyzers.ImplementsAnalyzer;
+import codeteacher.analyzers.ThrowsAnalyzer;
 import gui.component.ComponentUtils;
 import gui.msg.I18N;
 
@@ -91,24 +91,6 @@ public class PanelAddException extends JPanel {
 		gbc_chkClassMatchCase.gridy = 1;
 		this.add(chkMatchCase, gbc_chkClassMatchCase);
 
-		btnOk = new JButton("Ok");
-		btnOk.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				boolean matchCase = chkMatchCase.isSelected();
-				boolean regex = chkRegex.isSelected();
-				String name = txtName.getText();
-				
-				Object value = spinValue.getValue();
-				
-//				JComponent editor = spinValue.getEditor();
-//				JFormattedTextField txtField = ((JSpinner.NumberEditor) editor).getTextField();
-//				String txt = txtField.getText();
-				if (previous instanceof PanelException) {
-					((PanelException) previous).addException(name, matchCase, regex, (Double) value);
-				} // else if (previous instanceof )
-			}
-		});
-
 		chkRegex = new JCheckBox(I18N.getVal(REGEX));
 		GridBagConstraints gbc_chkClassRegex = new GridBagConstraints();
 		gbc_chkClassRegex.insets = new Insets(0, 0, 5, 5);
@@ -122,9 +104,46 @@ public class PanelAddException extends JPanel {
 		gbc_btnCancel.gridx = 4;
 		gbc_btnCancel.gridy = 2;
 		add(btnCancel, gbc_btnCancel);
+		
+		btnOk = new JButton("Ok");
 		GridBagConstraints gbc_btnOk = new GridBagConstraints();
 		gbc_btnOk.gridx = 5;
 		gbc_btnOk.gridy = 2;
 		add(btnOk, gbc_btnOk);
+		
+//		btnOk.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				ImplementsAnalyzer analyzer = createAnalyzer();
+//				if (previous instanceof PanelAddAnalyzer) {
+//					((PanelAddAnalyzer<ImplementsAnalyzer>) previous).addAnalyzer(analyzer);
+//				}
+//			}
+//		});
+	}
+	
+	public ImplementsAnalyzer createAnalyzer() {
+		boolean matchCase = chkMatchCase.isSelected();
+		boolean regex = chkRegex.isSelected();
+		String name = txtName.getText();
+		Double value = (Double) spinValue.getValue();
+
+		ImplementsAnalyzer implementsAnalyzer = new ImplementsAnalyzer(null, name, value.intValue());
+		return implementsAnalyzer;
+	}
+
+	public ThrowsAnalyzer createThrowsAnalyzer() {
+		boolean matchCase = chkMatchCase.isSelected();
+		boolean regex = chkRegex.isSelected();
+		String name = txtName.getText();
+		Double value = (Double) spinValue.getValue();
+
+		ThrowsAnalyzer throwsAnalyzer = new ThrowsAnalyzer(null, name, matchCase, regex, value.intValue());
+		return throwsAnalyzer;
+	}
+
+	
+	public void addAction(ActionListener actionListener) {
+		btnOk.addActionListener(actionListener);		
 	}
 }

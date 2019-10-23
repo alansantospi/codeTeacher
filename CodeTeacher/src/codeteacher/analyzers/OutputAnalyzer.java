@@ -57,15 +57,20 @@ public class OutputAnalyzer extends SimpleAnalyzer {
 		this.klazzName = klazz.getSimpleName();
 	}
 
-	public boolean isError()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public boolean isError() {
 		PrintStream saidaPadrao = System.out;
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream(baos);
 		System.setOut(ps);
 
-		new StaticMethodCall(klazz, methodName, methodRegex, methodReturn, params).exec();
+		try {
+			new StaticMethodCall(klazz, methodName, methodRegex, methodReturn, params).exec();
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		content = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 		content = content.replace("\r\n", "\n");

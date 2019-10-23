@@ -3,6 +3,7 @@ package utils;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -16,12 +17,16 @@ public class TestFileSearch {
 		fileSearch.setCaseSensitive(false);
 
 		String fileName = "TestaInteger.java";
-		fileSearch.searchDirectory(new File("/Users/edina/Downloads/IFMA_CN_2018_1_DSOO-INFO3-M_trabs_Atividade_02/"),
+		fileSearch.searchDirectory(new File("/Users/edina/Downloads/IFMA_trabs/IFMA_CN_2018_1_DSOO-INFO3-M_trabs_Atividade_02/"),
 				fileName);
 
 		int count = fileSearch.getResult().size();
+		List<String> resultString = fileSearch.getResultString();
+		int countStr = resultString.size();
+		
 
 		assertEquals(18, count);
+		assertEquals(18, countStr);
 	}
 
 	@Test

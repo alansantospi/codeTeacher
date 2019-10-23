@@ -18,24 +18,29 @@ import static gui.msg.FrameAddOutputMsg.REGEX;
 import static gui.msg.FrameAddOutputMsg.REMOVE;
 import static gui.msg.FrameAddOutputMsg.STATIC;
 
-import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.List;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JFormattedTextField;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.NumberFormatter;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -45,12 +50,14 @@ import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.spinner.WebSpinner;
 import com.alee.laf.text.WebTextField;
 
 import codeteacher.analyzers.ClassAnalyzer;
 import codeteacher.analyzers.FieldAnalyzer;
 import codeteacher.analyzers.FinalFieldAnalyzer;
+import codeteacher.analyzers.ImplementsAnalyzer;
 import codeteacher.analyzers.PrivateFieldAnalyzer;
 import codeteacher.analyzers.ProtectedFieldAnalyzer;
 import codeteacher.analyzers.PublicFieldAnalyzer;
@@ -60,9 +67,10 @@ import gui.component.ComponentUtils;
 import gui.msg.I18N;
 
 public class PanelAddField2 extends WebPanel {
-	
+
 	private FrameTestField previous;
-	
+	private JPanel panel;
+
 	/* Class */
 	private WebPanel pnlClass;
 	private WebLabel lblClassname;
@@ -95,18 +103,125 @@ public class PanelAddField2 extends WebPanel {
 	private WebSpinner spinFinal;
 	private WebSpinner spinStatic;
 	private WebSpinner spinVisibility;
-	
+	private JButton btnOk;
+	private JScrollPane scrollPreview;
+	private JLabel lblPreview;
+	private JLabel lblTotalValue;
+	private JLabel lblTotal;
+	private JPanel panel_1;
+	private JButton btnCancel;
+
 	public PanelAddField2(FrameTestField previous) {
 		this.previous = previous;
 		create();
+	}
+
+	/**
+	 * @param classAnalyzer
+	 * @wbp.parser.constructor
+	 */
+	public PanelAddField2(ClassAnalyzer classAnalyzer, JPanel panel) {
+		this.panel = panel;
+		create();
+		txtClassName.setText(classAnalyzer.getMemberName());
+		txtClassName.setEnabled(false);
+		chkClassRecursive.setSelected(classAnalyzer.isRecursive());
+		chkClassRecursive.setEnabled(false);
+		chkClassCase.setSelected(classAnalyzer.isMatchCase());
+		chkClassCase.setEnabled(false);
+		chkClassRegex.setSelected(classAnalyzer.isRegex());
+		chkClassRegex.setEnabled(false);
+		pnlClass.setEnabled(false);
+
+		panel_1 = new JPanel();
+		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.insets = new Insets(0, 0, 5, 5);
+		gbc_panel_1.fill = GridBagConstraints.BOTH;
+		gbc_panel_1.gridx = 1;
+		gbc_panel_1.gridy = 3;
+		add(panel_1, gbc_panel_1);
+		GridBagLayout gbl_panel_1 = new GridBagLayout();
+		gbl_panel_1.columnWidths = new int[] { 195, 45, 0, 0, 0, 0, 0, 0 };
+		gbl_panel_1.rowHeights = new int[] { 23, 0 };
+		gbl_panel_1.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panel_1.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+		panel_1.setLayout(gbl_panel_1);
+
+		btnCancel = new JButton("Cancel");
+		GridBagConstraints gbc_btnCancel = new GridBagConstraints();
+		gbc_btnCancel.insets = new Insets(0, 0, 0, 5);
+		gbc_btnCancel.gridx = 5;
+		gbc_btnCancel.gridy = 0;
+		panel_1.add(btnCancel, gbc_btnCancel);
+
+		btnOk = new JButton("Ok");
+		GridBagConstraints gbc_btnOk = new GridBagConstraints();
+		gbc_btnOk.anchor = GridBagConstraints.NORTHWEST;
+		gbc_btnOk.gridx = 6;
+		gbc_btnOk.gridy = 0;
+		panel_1.add(btnOk, gbc_btnOk);
+		btnOk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				String className = txtClassName.getText();
+				boolean regex = chkClassRegex.isSelected();
+				boolean matchCase = chkClassCase.isSelected();
+				boolean recursive = chkClassRecursive.isSelected();
+				Double total = Double.parseDouble(lblTotal.getText());
+				int totalValue = 0;
+				ClassAnalyzer classAnalyzer = new ClassAnalyzer(className, recursive, matchCase, regex, totalValue);
+
+				boolean declared = false;
+				boolean fieldRegex = chkFieldRegex.isSelected();
+				boolean fieldMatchCase = chkFieldMatchCase.isSelected();
+				String fieldName = txtFieldName.getText();
+				String fieldType = txtFieldType.getText();
+
+//				Integer value = (Integer) spinFieldName.getValue();
+
+				FieldAnalyzer fieldAnalyzer = new FieldAnalyzer(classAnalyzer, fieldType, declared, fieldName,
+						fieldRegex, fieldMatchCase, total.intValue());
+
+				String visibility = (String) comboFieldModifier.getSelectedItem();
+				Double visibilityValue = (Double) spinVisibility.getValue();
+				if (visibility.equals(PRIVATE.toString())) {
+					PrivateFieldAnalyzer privateFieldAnalyzer = new PrivateFieldAnalyzer(fieldAnalyzer,	visibilityValue.intValue());
+					fieldAnalyzer.add(privateFieldAnalyzer);
+				} else if (visibility.equals(PROTECTED.toString())) {
+					ProtectedFieldAnalyzer protectedFieldAnalyzer = new ProtectedFieldAnalyzer(fieldAnalyzer, visibilityValue.intValue());
+					fieldAnalyzer.add(protectedFieldAnalyzer);
+
+				} else if (visibility.equals(PUBLIC.toString())) {
+					PublicFieldAnalyzer publicFieldAnalyzer = new PublicFieldAnalyzer(fieldAnalyzer, visibilityValue.intValue());
+					fieldAnalyzer.add(publicFieldAnalyzer);
+				}
+
+				if (chkFieldStatic.isSelected()) {
+					Double staticValue = (Double) spinStatic.getValue();
+					StaticFieldAnalyzer staticFieldAnalyzer = new StaticFieldAnalyzer(fieldAnalyzer, staticValue.intValue());
+					fieldAnalyzer.add(staticFieldAnalyzer);
+				}
+
+				if (chkFieldFinal.isSelected()) {
+					Double finalValue = (Double) spinFinal.getValue();
+					FinalFieldAnalyzer finalFieldAnalyzer = new FinalFieldAnalyzer(fieldAnalyzer, finalValue.intValue());
+					fieldAnalyzer.add(finalFieldAnalyzer);
+				}
+
+				if (panel instanceof PanelAddAnalyzer) {
+					((PanelAddAnalyzer<FieldAnalyzer>) panel).addAnalyzer(fieldAnalyzer);
+				}
+			}
+		});
+		updatePreview();
 	}
 
 	private void create() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 36, 366, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 1, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 		pnlClass = new WebPanel();
 		pnlClass.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -207,10 +322,18 @@ public class PanelAddField2 extends WebPanel {
 		gbc_comboBox.gridy = 0;
 		comboFieldModifier.setModel(new DefaultComboBoxModel(new String[] { I18N.getVal(PRIVATE), I18N.getVal(PUBLIC),
 				I18N.getVal(PROTECTED), I18N.getVal(DEFAULT) }));
+		comboFieldModifier.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updatePreview();
+			}
+		});
+
 		pnlFields.add(comboFieldModifier, gbc_comboBox);
 
 		spinVisibility = ComponentUtils.createSpinner(spinVisibility);
-		
+		spinVisibility.addChangeListener(new ValueUpdateListener());
+
 		GridBagConstraints gbc_spinVisibility = new GridBagConstraints();
 		gbc_spinVisibility.gridwidth = 2;
 		gbc_spinVisibility.insets = new Insets(0, 0, 5, 5);
@@ -226,6 +349,19 @@ public class PanelAddField2 extends WebPanel {
 		gbc_chkFieldStatic.insets = new Insets(0, 0, 5, 5);
 		gbc_chkFieldStatic.gridx = 2;
 		gbc_chkFieldStatic.gridy = 1;
+		chkFieldStatic.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updatePreview();
+				boolean selected = chkFieldStatic.isSelected();
+				spinStatic.setEnabled(selected);
+				if (!selected) {
+					spinStatic.setValue(0d);
+				}
+
+			}
+		});
+
 		pnlFields.add(chkFieldStatic, gbc_chkFieldStatic);
 
 		spinStatic = ComponentUtils.createSpinner(spinStatic);
@@ -234,6 +370,7 @@ public class PanelAddField2 extends WebPanel {
 		gbc_spinStatic.insets = new Insets(0, 0, 5, 5);
 		gbc_spinStatic.gridx = 5;
 		gbc_spinStatic.gridy = 1;
+		spinStatic.addChangeListener(new ValueUpdateListener());
 		pnlFields.add(spinStatic, gbc_spinStatic);
 
 		chkFieldFinal = new WebCheckBox(I18N.getVal(FINAL));
@@ -245,6 +382,18 @@ public class PanelAddField2 extends WebPanel {
 		gbc_chkFieldFinal.insets = new Insets(0, 0, 5, 5);
 		gbc_chkFieldFinal.gridx = 2;
 		gbc_chkFieldFinal.gridy = 2;
+
+		chkFieldFinal.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updatePreview();
+				boolean selected = chkFieldFinal.isSelected();
+				spinFinal.setEnabled(selected);
+				if (!selected) {
+					spinFinal.setValue(0d);
+				}
+			}
+		});
 		pnlFields.add(chkFieldFinal, gbc_chkFieldFinal);
 
 		spinFinal = ComponentUtils.createSpinner(spinFinal);
@@ -253,6 +402,7 @@ public class PanelAddField2 extends WebPanel {
 		gbc_spinFinal.insets = new Insets(0, 0, 5, 5);
 		gbc_spinFinal.gridx = 5;
 		gbc_spinFinal.gridy = 2;
+		spinFinal.addChangeListener(new ValueUpdateListener());
 		pnlFields.add(spinFinal, gbc_spinFinal);
 
 		lblFieldType = new WebLabel(I18N.getVal(FIELD_TYPE));
@@ -272,6 +422,7 @@ public class PanelAddField2 extends WebPanel {
 
 		txtFieldType = new WebTextField();
 		txtFieldType.setColumns(10);
+		txtFieldType.getDocument().addDocumentListener(new UpdatePreviewListener());
 		pnlFields.add(txtFieldType, gbc_txtFieldType);
 
 		spinFieldType = ComponentUtils.createSpinner(spinFieldType);
@@ -280,6 +431,7 @@ public class PanelAddField2 extends WebPanel {
 		gbc_spinFieldType.insets = new Insets(0, 0, 5, 5);
 		gbc_spinFieldType.gridx = 5;
 		gbc_spinFieldType.gridy = 3;
+		spinFieldType.addChangeListener(new ValueUpdateListener());
 		pnlFields.add(spinFieldType, gbc_spinFieldType);
 
 		lblFieldName = new WebLabel(I18N.getVal(FIELD_NAME));
@@ -305,6 +457,7 @@ public class PanelAddField2 extends WebPanel {
 		gbc_txtFieldName.insets = new Insets(0, 0, 5, 5);
 		gbc_txtFieldName.gridx = 2;
 		gbc_txtFieldName.gridy = 4;
+		txtFieldName.getDocument().addDocumentListener(new UpdatePreviewListener());
 		pnlFields.add(txtFieldName, gbc_txtFieldName);
 
 		spinFieldName = ComponentUtils.createSpinner(spinFieldName);
@@ -313,6 +466,7 @@ public class PanelAddField2 extends WebPanel {
 		gbc_spinFieldName.insets = new Insets(0, 0, 5, 5);
 		gbc_spinFieldName.gridx = 5;
 		gbc_spinFieldName.gridy = 4;
+		spinFieldName.addChangeListener(new ValueUpdateListener());
 
 		pnlFields.add(spinFieldName, gbc_spinFieldName);
 
@@ -332,6 +486,20 @@ public class PanelAddField2 extends WebPanel {
 
 		btnAddField = new WebButton(I18N.getVal(ADD));
 		btnAddField.addActionListener(new AddFieldListener());
+
+		lblTotalValue = new JLabel("Total value");
+		GridBagConstraints gbc_lblTotalValue = new GridBagConstraints();
+		gbc_lblTotalValue.insets = new Insets(0, 0, 5, 5);
+		gbc_lblTotalValue.gridx = 5;
+		gbc_lblTotalValue.gridy = 5;
+		pnlFields.add(lblTotalValue, gbc_lblTotalValue);
+
+		lblTotal = new JLabel("0");
+		GridBagConstraints gbc_lblTotal = new GridBagConstraints();
+		gbc_lblTotal.insets = new Insets(0, 0, 5, 5);
+		gbc_lblTotal.gridx = 6;
+		gbc_lblTotal.gridy = 5;
+		pnlFields.add(lblTotal, gbc_lblTotal);
 		GridBagConstraints gbc_btnAddField = new GridBagConstraints();
 		gbc_btnAddField.insets = new Insets(0, 0, 5, 5);
 		gbc_btnAddField.gridx = 5;
@@ -344,8 +512,23 @@ public class PanelAddField2 extends WebPanel {
 		gbc_btnRemoveField.gridx = 6;
 		gbc_btnRemoveField.gridy = 6;
 		pnlFields.add(btnRemoveField, gbc_btnRemoveField);
+
+		scrollPreview = new JScrollPane();
+		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
+		gbc_scrollPane.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane.gridx = 1;
+		gbc_scrollPane.gridy = 2;
+		add(scrollPreview, gbc_scrollPane);
+
+		lblPreview = new JLabel("");
+		scrollPreview.setViewportView(lblPreview);
+		lblPreview.setFont(new Font("Courier New", Font.BOLD, 14));
+
 		btnRemoveField.addActionListener(new RemoveFieldListener());
 
+		spinFinal.setEnabled(chkFieldFinal.isSelected());
+		spinStatic.setEnabled(chkFieldStatic.isSelected());
 	}
 
 	private final class AddFieldListener implements ActionListener {
@@ -389,12 +572,14 @@ public class PanelAddField2 extends WebPanel {
 				String visibility = (String) comboFieldModifier.getSelectedItem();
 				int visibilityValue = (Integer) spinVisibility.getValue();
 				if (visibility.equals(PRIVATE.toString())) {
-					PrivateFieldAnalyzer privateFieldAnalyzer = new PrivateFieldAnalyzer(fieldAnalyzer, visibilityValue);
+					PrivateFieldAnalyzer privateFieldAnalyzer = new PrivateFieldAnalyzer(fieldAnalyzer,
+							visibilityValue);
 					previous.addToTree(childNode, privateFieldAnalyzer);
 				} else if (visibility.equals(PROTECTED.toString())) {
-					ProtectedFieldAnalyzer protectedFieldAnalyzer = new ProtectedFieldAnalyzer(fieldAnalyzer, visibilityValue);
+					ProtectedFieldAnalyzer protectedFieldAnalyzer = new ProtectedFieldAnalyzer(fieldAnalyzer,
+							visibilityValue);
 					previous.addToTree(childNode, protectedFieldAnalyzer);
-					
+
 				} else if (visibility.equals(PUBLIC.toString())) {
 					PublicFieldAnalyzer publicFieldAnalyzer = new PublicFieldAnalyzer(fieldAnalyzer, visibilityValue);
 					previous.addToTree(childNode, publicFieldAnalyzer);
@@ -426,20 +611,84 @@ public class PanelAddField2 extends WebPanel {
 //			int selectedRow = tableFields.getSelectedRow();
 //			if (selectedRow >= 0) {
 //				ComponentUtils.removeRow(tableFields, selectedRow);
-				// updatePreview();
+			// updatePreview();
 //				checkBoxTree.removeCurrentNode();
 //			}
 		}
 	}
 
+	private void updatePreview() {
+		String fieldName = txtFieldName.getText();
+		String fieldType = txtFieldType.getText();
+		int index = comboFieldModifier.getSelectedIndex();
+		String visibility = (String) comboFieldModifier.getItemAt(index);
+		String isStatic = chkFieldStatic.isSelected() ? I18N.getVal(STATIC) + " " : "";
+		String isFinal = chkFieldFinal.isSelected() ? I18N.getVal(FINAL) + " " : "";
+		String preview = visibility + " " + isStatic + isFinal + fieldType + " " + fieldName;
+
+		lblPreview.setText(preview);
+
+//		updateButtons();
+	}
+
+	private void updateValue() {
+		Double nameValue = (Double) spinFieldName.getValue();
+		Double typeValue = (Double) spinFieldType.getValue();
+		Double finalValue = (Double) spinFinal.getValue();
+		Double staticValue = (Double) spinStatic.getValue();
+		Double visValue = (Double) spinVisibility.getValue();
+
+		Double totalValue = nameValue + typeValue + finalValue + staticValue + visValue;
+
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ROOT);
+		symbols.setGroupingSeparator('.');
+
+		NumberFormat formatter = new DecimalFormat("#0.00", symbols);
+		System.out.println(formatter.format(totalValue));
+
+		lblTotal.setText(formatter.format(totalValue));
+	}
+
 	public static void main(String[] args) {
+
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ROOT);
+//	        symbols.setDecimalSeparator(',');
+		symbols.setGroupingSeparator('.');
+
+		NumberFormat formatter = new DecimalFormat("#0.00", symbols);
+		float a = 5;
+		double x = 0.222543853489;
+		System.out.println(formatter.format(a));
 
 //		WebFrame frame = new WebFrame();
 //
-//		frame.getContentPane().add(new PanelAddField2());
+//		frame.getContentPane().add(new PanelAddField2(null));
 //		frame.pack();
 //		frame.center();
 //		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //		frame.setVisible(true);
 	}
+
+	public class UpdatePreviewListener implements DocumentListener {
+
+		public void removeUpdate(DocumentEvent e) {
+			updatePreview();
+		}
+
+		public void insertUpdate(DocumentEvent e) {
+			updatePreview();
+		}
+
+		public void changedUpdate(DocumentEvent e) {
+			updatePreview();
+		}
+	}
+
+	public class ValueUpdateListener implements javax.swing.event.ChangeListener {
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			updateValue();
+		}
+	}
+
 }

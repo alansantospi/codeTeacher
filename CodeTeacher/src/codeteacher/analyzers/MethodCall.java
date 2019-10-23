@@ -1,6 +1,7 @@
 package codeteacher.analyzers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -70,11 +71,25 @@ public class MethodCall extends SimpleAnalyzer {
 		return value;
 	}
 	
-	public boolean isError() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public boolean isError() {
 		
 		if (!constructorCall.exec()){
 		
-			methodReturn = ReflectionUtils.invokeMethod(constructorCall.getObj(), constructorCall.getKlazz(), methodName, getArguments());
+			try {
+				methodReturn = ReflectionUtils.invokeMethod(constructorCall.getObj(), constructorCall.getKlazz(), methodName, getArguments());
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	
 			if (methodReturn == null && output != null){
 				return true;
@@ -94,7 +109,17 @@ public class MethodCall extends SimpleAnalyzer {
 		if (!constructorCall.exec()){
 		
 			try {
-				methodReturn = ReflectionUtils.invokeMethod(constructorCall.getObj(), constructorCall.getKlazz(), methodName, getArguments());
+				List<Object> args = new ArrayList<>();
+				for (Object object : getArguments()) {
+					if (object instanceof ConstructorCall) {
+						ConstructorCall cons = (ConstructorCall) object;
+						cons.exec();
+						object = cons.getObj();
+					}
+					args.add(object);
+				}
+				
+				methodReturn = ReflectionUtils.invokeMethod(constructorCall.getObj(), constructorCall.getKlazz(), methodName, args.toArray(new Object[0]));
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

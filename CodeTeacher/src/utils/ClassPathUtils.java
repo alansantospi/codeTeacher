@@ -6,14 +6,13 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import com.sun.xml.internal.ws.util.StringUtils;
 
 public class ClassPathUtils {
 	private static List<JarFile> jarFiles = new ArrayList<JarFile>();
@@ -68,30 +67,48 @@ public class ClassPathUtils {
 	
 	public static List<String> match(String pattern){
 		List<String> foundClasses = new ArrayList<String>(); 
-				find3rdPartyKlazzes();
+		boolean search3rdParty = false;
+		if (search3rdParty) {
+			find3rdPartyKlazzes();
+		}
 		
 		List<String> klazzes = ClassFinderUtils.getKlazzes();
 		allKlazzes.clear();
 		allKlazzes.addAll(klazzes);
-		
+		Map<String, String> map = new HashMap<String, String>();
 		for (Iterator<String> iterator = allKlazzes.iterator(); iterator.hasNext(); ) {
 			String klazzName = iterator.next();
-			String simpleName = klazzName.toLowerCase();//.substring(klazzName.lastIndexOf(".") + 1);
+			String simpleName = klazzName.substring(klazzName.lastIndexOf(".") + 1);
 			
 //			pattern = StringUtils.capitalize(pattern);
-			if ((!simpleName.contains("$")) && simpleName.contains(pattern)){
-				foundClasses.add(klazzName);
+			if ((!simpleName.contains("$")) && simpleName.toLowerCase().startsWith(pattern)) {
+//			if ((!simpleName.contains("$")) && simpleName.contains(pattern)){
+				map.put(simpleName, klazzName);
 			}
 		}
-		java.util.Collections.sort(foundClasses);
+		
+		Set<String> keySet = map.keySet();
+		ArrayList<String> list = new ArrayList<String>(keySet);
+		java.util.Collections.sort(list);
+		
+		for (String key : list) {
+			String name = map.get(key);
+			foundClasses.add(name);
+		}
+		
+//		java.util.Collections.sort(foundClasses);
 		return foundClasses;
 	}
 	
 	public static void main(String[] args) {		
-		ClassPathUtils util = new ClassPathUtils();
-		List<String> foundClasses = util.find3rdPartyKlazzes();
+//		ClassPathUtils util = new ClassPathUtils();
+//		List<String> foundClasses = util.find3rdPartyKlazzes();
+		
+		List<String> foundClasses = ClassFinderUtils.getKlazzes();
 		for (String str : foundClasses) {
-			System.out.println(str);
+			int beginIndex = str.lastIndexOf('.')+1;
+			 String data = str.substring(beginIndex); 
+			System.out.println("{ value: '"+ str + "', data: '"+data+"'},");
 		}
 	}
 }

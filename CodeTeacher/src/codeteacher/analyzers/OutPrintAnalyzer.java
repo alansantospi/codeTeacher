@@ -2,7 +2,6 @@ package codeteacher.analyzers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
@@ -10,7 +9,6 @@ import java.util.regex.Pattern;
 
 import codeteacher.err.Error;
 import codeteacher.err.OutPrintError;
-import utils.ReflectionUtils;
 import utils.StringUtils;
 
 public class OutPrintAnalyzer extends SimpleAnalyzer {
@@ -37,8 +35,7 @@ public class OutPrintAnalyzer extends SimpleAnalyzer {
 	}
 	
 	@Override
-	public boolean isError()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public boolean isError() {
 		
 		PrintStream saidaPadrao = System.out;
 

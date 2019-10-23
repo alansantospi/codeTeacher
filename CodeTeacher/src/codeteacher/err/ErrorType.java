@@ -2,231 +2,139 @@ package codeteacher.err;
 
 import java.text.MessageFormat;
 
+import org.apache.commons.lang3.StringUtils;
+
 import gui.msg.GuiMsg;
 import gui.msg.I18N;
 import utils.ReflectionUtils;
 
 public enum ErrorType implements IErrorType, GuiMsg {
+
+	IO("IO"),
 	
-	CLASS_NOT_FOUND("Classe n„o encontrada"){
-		public String getMessage(){
-			return "Classe {0} n„o encontrada!";
-		}
-	},
-	
-	PARAM_CLASS_NOT_FOUND("Par‚metro n„o encontrado"){
-		public String getMessage(){
-			return "N„o foi possÌvel verificar o mÈtodo {0} da classe {1} por que o par‚metro do tipo {2} n„o foi encontrado";
-		}
-	},
-	
-	SUPERCLASS_NOT_FOUND("Superclasse n„o encontrada"){
+	CLASS_NOT_FOUND("Classe n√£o encontrada"),
+
+	PARAM_CLASS_NOT_FOUND("Par√£metro n√£o encontrado"),
+
+	SUPERCLASS_NOT_FOUND("Superclasse n√£o encontrada"),
+
+	METHOD_NOT_FOUND("M√©todo n√£o encontrado"),
+
+	FIELD_NOT_FOUND("Atributo n√£o encontrado"),
+
+	CONSTRUCTOR_NOT_FOUND("Construtor n√£o encontrado"),
+
+	INTERFACE_NOT_IMPLEMENTED("Interface n√£o implementada"),
+
+	PROJECT_NOT_FOUND("Projeto n√£o encontrado") {
 		@Override
-		public boolean eval(Class<?> clazz, String name, Class<?>... parameterTypes) {
-			Class<?> superClazz = ReflectionUtils.getSuperClass(clazz);
-			
-			if (parameterTypes.length > 0){
-				
-				Class<?> otherClazz = parameterTypes[0];
-				Class<?> otherSuperClazz = ReflectionUtils.getSuperClass(otherClazz);
-				String otherSuperClazzName = otherSuperClazz.getName();
-				String superClazzName = superClazz.getName();
-				
-				String type = otherClazz.isInterface() ? "interface" : "classe";
-				String superType = superClazz.isInterface() ? "interface" : "superclasse";
-				
-				
-				if (!superClazzName.equals(otherSuperClazzName)){
-					setMessage("A " + type + " " + otherClazz.getName() + " deve extender a " + superType + " " + superClazz.getName());
-					return true;
-				}
-			}
-			return false;
-		}
-	},
-	
-	METHOD_NOT_FOUND("MÈtodo n„o encontrado"){
-		public String getMessage(){
-			return "MÈtodo {0} n„o encontrado na classe {1}";
-		}
-	},
-	
-	FIELD_NOT_FOUND("Atributo n„o encontrado"){
-		@Override
-		public boolean eval(Class<?> clazz, String name, Class<?>... parameterTypes) {
-			try {
-				ReflectionUtils.getField(clazz, true, name);
-			} catch (NoSuchFieldException e) {
-				return true;
-			}
-			return false;
-		}
-		public String getMessage(){
-			return "Atributo {0} n„o encontrado na classe {1}";
-		}
-	},
-	
-	CONSTRUCTOR_NOT_FOUND("Construtor n„o encontrado"){
-		@Override
-		public boolean eval(Class<?> clazz, String name, Class<?>... parameterTypes) {
-			try {
-				ReflectionUtils.getConstructor(clazz, parameterTypes);
-			} catch (NoSuchMethodException e) {
-				return true;
-			}
-			return false;
-		}
-		public String getMessage(){
-			return "Construtor {0} n„o encontrado na classe {1}";
-		}
-	},
-	
-	INTERFACE_NOT_IMPLEMENTED("Interface n„o implementada"){
-		@Override
-		public boolean eval(Class<?> clazz, String name, Class<?>... parameterTypes) {
-			for (Class<?> anInterface : parameterTypes) {
-				if (ReflectionUtils.isImplemented(clazz, anInterface)){
-					return true;
-				}
-			}
-			return false;
-		}
-	}, 
-	
-	PROJECT_NOT_FOUND("Projeto n„o encontrado"){
-		@Override
-		public boolean isFatal(){
+		public boolean isFatal() {
 			return true;
 		}
-		public String getMessage(){
-			return "O projeto {0} n„o foi encontrado!";
-		}
 	},
-	
-	PROJECT_UNDEFINED("Projeto indefinido"){
+
+	PROJECT_UNDEFINED("Projeto indefinido") {
 		@Override
-		public boolean isFatal(){
+		public boolean isFatal() {
 			return true;
 		}
-		public String getMessage(){
-			return "N„o foi possÌvel definir o projeto {0}";
-		}
 	},
-	
-	JAR_NOT_FOUND("Arquivo Jar n„o encontrado"){
+
+	JAR_NOT_FOUND("Arquivo Jar n√£o encontrado") {
 		@Override
-		public boolean isFatal(){
+		public boolean isFatal() {
 			return true;
 		}
-		public String getMessage(){
-			return "O arquivo {0} n„o foi encontrado!";
-		}
 	},
-	
-	FILE_NOT_FOUND("Arquivo n„o encontrado"){
+
+	FILE_NOT_FOUND("Arquivo n√£o encontrado") {
 		@Override
-		public boolean isFatal(){
+		public boolean isFatal() {
 			return true;
 		}
-		public String getMessage(){
-			return "O arquivo {0} n„o foi encontrado!";
-		}
 	},
-	
-	BIN_NOT_FOUND("Pasta bin n„o encontrada"){
+
+	BIN_NOT_FOUND("Pasta bin n√£o encontrada") {
 		@Override
-		public boolean isFatal(){
+		public boolean isFatal() {
 			return true;
 		}
-		public String getMessage(){
-			return "A pasta {0} n„o foi encontrada!";
-		}
 	},
-	
-	FOLDER_NOT_FOUND("Pasta n„o encontrada"){
+
+	FOLDER_NOT_FOUND("Pasta n√£o encontrada") {
 		@Override
-		public boolean isFatal(){
+		public boolean isFatal() {
 			return true;
 		}
-		public String getMessage(){
-			return "A pasta {0}\\{1} n„o foi encontrada!";
-		}
 	},
-	
-	SRC_FOLDER_NOT_FOUND("Pasta src n„o encontrada"){
+
+	SRC_FOLDER_NOT_FOUND("Pasta src n√£o encontrada") {
 		@Override
-		public boolean isFatal(){
+		public boolean isFatal() {
 			return true;
 		}
-		public String getMessage(){
-			return "A pasta {0} n„o foi encontrada!";
-		}
 	},
-	
-	METHOD_NOT_ABSTRACT("MÈtodo n„o abstrato"), 
-	METHOD_NOT_FINAL("MÈtodo n„o final"), 
-	METHOD_NOT_PRIVATE("MÈtodo n„o privado"), 
-	METHOD_NOT_PROTECTED("MÈtodo n„o protegido"),
-	METHOD_NOT_PUBLIC("MÈtodo n„o p˙blico"), 
-	METHOD_NOT_STATIC("MÈtodo n„o est·tico"),
-	METHOD_MODIFIER_MISMATCH("MÈtodo com modificador incorreto"){
-		public String getMessage(){
-			return "O mÈtodo {0} da classe {1} deveria ser {2}";
-		}
-	},
-	METHOD_NOT_RETURN("MÈtodo incorreto"),
-	
-	COMPILATION_PROBLEM("Erro de compilaÁ„o"){
+
+	METHOD_NOT_ABSTRACT("M√©todo n√£o abstrato"), METHOD_NOT_FINAL("M√©todo n√£o final"),
+	METHOD_NOT_PRIVATE("M√©todo n√£o privado"), METHOD_NOT_PROTECTED("M√©todo n√£o protegido"),
+	METHOD_NOT_PUBLIC("M√©todo n√£o p√∫blico"), METHOD_NOT_STATIC("M√©todo n√£o est√°tico"),
+	METHOD_MODIFIER_MISMATCH("M√©todo com modificador incorreto"),
+	METHOD_NOT_RETURN("M√©todo incorreto"),
+
+	COMPILATION_PROBLEM("Erro de compila√ß√£o") {
 		@Override
-		public boolean isFatal(){
+		public boolean isFatal() {
 			return true;
 		}
-		public String getMessage(){
-			return "Erro de compilaÁ„o! Classe: {0}";
-		}
-	}, 
-	CLASS_UNDEFINED("Classe indefinida"){
+	},
+	
+	CLASS_UNDEFINED("Classe indefinida") {
 		@Override
-		public boolean isFatal(){
+		public boolean isFatal() {
 			return true;
-		}
-		public String getMessage(){
-			return "N„o foi possÌvel definir a classe {0}";
-		}
-	}, 
-	FIELD_MOFIDIER_MISMATCH("Atributo com modificador incorreto"){
-		public String getMessage(){
-			return "O atributo {0} da classe {1} deveria ser {2}";
-		}
-	}, 
-	NOT_AN_INTERFACE("Not an interface"){
-		public String getMessage(){
-			return I18N.getVal(this);// "The specified type {0} does not represents an interface";
-		}
-	}, 
-	
-	INCORRECT_OUTPRINT("Incorrect outprint"){
-		public String getMessage(){
-			return I18N.getVal(this);
-		}
-	}, 
-	
-	CODE_STYLE_ERROR("CODE STYLE ERROR"){
-		public String getMessage(){
-			return I18N.getVal(this);
 		}
 	},
 	
+	CLASS_MODIFIER_MISMATCH("Classe com modificador incorreto"),
+	
+	FIELD_MODIFIER_MISMATCH("Atributo com modificador incorreto"),
+	
+	NOT_AN_INTERFACE("Not an interface"),
+
+	INCORRECT_OUTPRINT("Incorrect outprint"),
+
+	CODE_STYLE_ERROR("CODE STYLE ERROR"),
+
+	EXCEPTION_NOT_THROWN("EXCEPTION NOT THROWN"),
+
+	ILLEGAL_ACCESS("ILLEGAL ACCESS"), 
+	
+	ILLEGAL_ARGUMENT("ILLEGAL ARGUMENT"),
+	
+	INPUT_ERROR("INPUT ERROR"),
+	
+	/*
+	 * When a method, that has been invoked with reflection API, throws an exception (runtime exception for example), 
+	 * the reflection API will wrap the exception into an InvocationTargetException.
+	 */
+	INVOCATION_TARGET("INVOCATION TARGET"),
+	
+	/*
+	 * Thrown when an application tries to create an instance of a class using the newInstance method in class Class, but the specified class object cannot be instantiated. The instantiation can fail for a variety of reasons including but not limited to:
+	* the class object represents an abstract class, an interface, an array class, a primitive type, or void
+	* the class has no nullary constructor
+	*/
+	INSTANTIATION("INSTANTIATION")
 	;
 
 	private String description;
 	private int value;
 	private String message;
 
-	private ErrorType(String descricao){
+	private ErrorType(String descricao) {
 		this.description = descricao;
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}
@@ -240,19 +148,22 @@ public enum ErrorType implements IErrorType, GuiMsg {
 	}
 
 	public String getMessage() {
+		if (message == null) {
+			return I18N.getVal(this);
+		}
 		return message;
 	}
 
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	
-	public boolean isFatal(){
+
+	public boolean isFatal() {
 		return false;
 	}
-	
-	public String toString(){
-		
+
+	public String toString() {
+
 		return this.getDescription() + " | " + this.getValue();
 	}
 
@@ -260,16 +171,15 @@ public enum ErrorType implements IErrorType, GuiMsg {
 	public boolean eval(Class<?> clazz, String name, Class<?>... parameterTypes) {
 		return false;
 	}
-	
-	public String getMessage(String... args){
+
+	public String getMessage(String... args) {
 		String msg = MessageFormat.format(getMessage(), args);
 		return msg;
 	}
-	
+
 	@Override
 	public String prefix() {
-		return "Error";
+		return "ErrorType";
 	}
-
 
 }

@@ -1,39 +1,35 @@
 package codeteacher.analyzers;
 
-import java.lang.reflect.InvocationTargetException;
-
 import codeteacher.err.Error;
 import codeteacher.err.ErrorType;
 import utils.ReflectionUtils;
 
-public class ImplementsAnalyzer extends SimpleAnalyzer{
+public class ImplementsAnalyzer extends SimpleAnalyzer {
 	
 	private ClassAnalyzer parent;
-	private String interFace;
 	
-	public ImplementsAnalyzer(ClassAnalyzer parent, String interFace, int value) {
+	public ImplementsAnalyzer(ClassAnalyzer parent, String name, int value) {
 		this.parent = parent;
-		this.interFace = interFace;
+		this.name = name;
 		this.value = value;
 	}
 
 	@Override
-	public boolean isError()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public boolean isError() {
 		return !match();
 	}
 
 	@Override
 	public Error getError() {
 		ErrorType errorType = ErrorType.INTERFACE_NOT_IMPLEMENTED;
-		Error error = new Error(errorType, errorType.getMessage(name, interFace), getValue());
+		Error error = new Error(errorType, errorType.getMessage(parent.getMemberName(), name), getValue());
 		return error;
 	}
 	
 	
 	public boolean match(){
 		for (Class<?> anInterface : ReflectionUtils.getInterfaces(parent.getKlazz())) {
-			if (anInterface.equals(interFace)) {
+			if (anInterface.getName().equals(name)) {
 				return true;
 			}
 		}
@@ -43,8 +39,12 @@ public class ImplementsAnalyzer extends SimpleAnalyzer{
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("implements" + " ").append(interFace);
+		sb.append("implements" + " ").append(name);
 		
 		return sb.toString();
+	}
+	@Override
+	public String getMemberName() {
+		return name;
 	}
 }

@@ -1,9 +1,5 @@
 package codeteacher.analyzers;
 
-import java.lang.reflect.InvocationTargetException;
-
-import codeteacher.err.Error;
-import codeteacher.err.ErrorType;
 import utils.ReflectionUtils;
 
 public class PublicFieldAnalyzer extends FieldModifierAnalyzer {
@@ -18,8 +14,7 @@ public class PublicFieldAnalyzer extends FieldModifierAnalyzer {
 	}
 
 	@Override
-	public boolean isError()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public boolean isError() {
 
 		return !ReflectionUtils.isPublic(getKlazz(), parent.getMemberName(), parent.isDeclared(), parent.isRegex(), parent.isMatchCase());
 	}

@@ -561,7 +561,7 @@ public class FrameTestField extends WebFrame {
 //		gbl_pnlTests.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		pnlTests.setLayout(gbl_pnlTests);
 
-		rootNode = new DefaultMutableTreeNode("Fields");
+		rootNode = new DefaultMutableTreeNode("Types");
 		checkBoxTree = new DynamicWebCheckBoxTree(rootNode);
 		GridBagConstraints gbc_checkBoxTree = new GridBagConstraints();
 		gbc_checkBoxTree.insets = new Insets(0, 0, 5, 5);

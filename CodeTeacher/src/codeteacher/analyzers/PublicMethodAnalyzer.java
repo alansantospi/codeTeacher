@@ -1,7 +1,5 @@
 package codeteacher.analyzers;
 
-import java.lang.reflect.Modifier;
-
 import utils.ReflectionUtils;
 
 public class PublicMethodAnalyzer extends MethodModifierAnalyzer {

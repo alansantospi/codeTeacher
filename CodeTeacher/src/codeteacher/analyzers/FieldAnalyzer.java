@@ -1,22 +1,16 @@
 package codeteacher.analyzers;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.alee.utils.CollectionUtils;
-
 import codeteacher.err.Error;
 import codeteacher.err.ErrorType;
-import utils.ReflectionUtils;
 
-public class FieldAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
+public class FieldAnalyzer extends MemberAnalyzer {
 
-	private ClassAnalyzer parent;
 	private String type;
-	private boolean declared;
 	
 	public FieldAnalyzer(ClassAnalyzer parent, boolean declared, String name, boolean regex, boolean matchCase) {
 		this.parent = parent;
@@ -45,17 +39,20 @@ public class FieldAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
 		this.matchCase = matchCase;
 	}
 
-	public boolean isError()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public boolean isError() {
 		return !match();
 	}
 	
 	public Error getError() {
 		ErrorType errorType = ErrorType.FIELD_NOT_FOUND;
-		Error error = new Error(errorType, errorType.getMessage(name, parent.getMemberName()), getValue());
+		Error error = new Error(errorType, errorType.getMessage(name, type, getParentName()), getValue());
 		return error;
 	}
 
+	public String getParentName() {
+		return parent.getMemberName();
+	}
+	
 	public boolean isDeclared() {
 		return declared;
 	}
@@ -100,11 +97,6 @@ public class FieldAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
 		return t1.getName().equals(type);
 	}
 	
-	@Override
-	public AbstractAnalyzer getParent() {
-		return parent;
-	}
-	
 	public String getType() {
 		return type;
 	}
@@ -114,8 +106,28 @@ public class FieldAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
 		return this;
 	}
 	
+	public FieldAnalyzer addPrivate(int value) {
+		add(new PrivateFieldAnalyzer(this, value));
+		return this;
+	}
+	
 	public FieldAnalyzer addPublic() {
 		add(new PublicFieldAnalyzer(this));
+		return this;
+	}
+	
+	public FieldAnalyzer addPublic(int value) {
+		add(new PublicFieldAnalyzer(this, value));
+		return this;
+	}
+	
+	public FieldAnalyzer addPackage() {
+		add(new PackageFieldAnalyzer(this));
+		return this;
+	}
+	
+	public FieldAnalyzer addPackage(int value) {
+		add(new PackageFieldAnalyzer(this, value));
 		return this;
 	}
 	
@@ -124,8 +136,18 @@ public class FieldAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
 		return this;
 	}
 	
+	public FieldAnalyzer addProtected(int value) {
+		add(new ProtectedFieldAnalyzer(this, value));
+		return this;
+	}
+	
 	public FieldAnalyzer addStatic() {
 		add(new StaticFieldAnalyzer(this));
+		return this;
+	}
+	
+	public FieldAnalyzer addStatic(int value) {
+		add(new StaticFieldAnalyzer(this, value));
 		return this;
 	}
 	
@@ -134,11 +156,16 @@ public class FieldAnalyzer extends CompositeAnalyzer<FieldModifierAnalyzer> {
 		return this;
 	}
 	
+	public FieldAnalyzer addFinal(int value) {
+		add(new FinalFieldAnalyzer(this, value));
+		return this;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		List<FieldModifierAnalyzer> children = getChildren();
-		for (FieldModifierAnalyzer child : children) {
+		List<ModifierAnalyzer> children = getChildren();
+		for (ModifierAnalyzer child : children) {
 			sb.append(child).append(" ");
 		}
 		sb.append(type + " ").append(name);

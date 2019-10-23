@@ -48,6 +48,22 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- rar decompression library in plain java -->
+		<!-- https://mvnrepository.com/artifact/com.github.junrar/junrar -->
+		<dependency>
+		    <groupId>com.github.junrar</groupId>
+		    <artifactId>junrar</artifactId>
+		    <version>4.0.0</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.asm-labs/junrar -->
+<!-- https://mvnrepository.com/artifact/com.tencent.mm/SevenZip -->
+		<dependency>
+            <groupId>net.sf.sevenzipjbinding</groupId>
+            <artifactId>sevenzipjbinding</artifactId>
+            <version>9.20-2.00beta</version>
+        </dependency>				
 
 		<!-- Checkstyle -->
 		<dependency>
@@ -69,6 +85,78 @@
 			<version>5.0.3</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.google.apis/google-api-services-classroom -->
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-classroom</artifactId>
+			<version>v1-rev313-1.18.0-rc</version>
+			<!-- <version>v1-rev302-1.25.0</version> -->
+		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-oauth2</artifactId>
+			<version>v2-rev131-1.23.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.http-client</groupId>
+			<artifactId>google-http-client-jackson2</artifactId>
+			<version>${project.http.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.oauth-client</groupId>
+			<artifactId>google-oauth-client-jetty</artifactId>
+			<version>${project.oauth.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.apis/google-api-services-drive -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.google.apis</groupId> -->
+		<!-- <artifactId>google-api-services-drive</artifactId> -->
+		<!-- <version>v2-rev65-1.14.1-beta</version> -->
+		<!-- </dependency> -->
+		<!-- https://mvnrepository.com/artifact/com.google.apis/google-api-services-drive -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.google.apis</groupId> -->
+		<!-- <artifactId>google-api-services-drive</artifactId> -->
+		<!-- <version>v3-rev173-1.25.0</version> -->
+		<!-- </dependency> -->
+
+		<!-- https://mvnrepository.com/artifact/com.google.apis/google-api-services-drive -->
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-drive</artifactId>
+			<version>v3-rev173-1.18.0-rc</version>
+		</dependency>
+
+		<!-- <dependency> -->
+		<!-- <groupId>com.google.jimfs</groupId> -->
+		<!-- <artifactId>jimfs</artifactId> -->
+		<!-- <version>1.1</version> -->
+		<!-- </dependency> -->
+
+		<!-- An in memory implementation of a JSR-203 (Java 7) file system for 
+			testing purposes. -->
+		<dependency>
+			<groupId>com.github.marschall</groupId>
+			<artifactId>memoryfilesystem</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+
+		<!-- A Class Loader that works on a Java 7 (JSR-203) file system path. -->
+		<dependency>
+			<groupId>com.github.marschall</groupId>
+			<artifactId>path-classloader</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun</groupId>
+			<artifactId>tools</artifactId>
+			<version>1.8.0</version>
+			<scope>system</scope>
+			<systemPath>${java.home}/../lib/tools.jar</systemPath>
+		</dependency>
+
 
 		<!-- <dependency> -->
 		<!-- <groupId>fi.helsinki.cs.tmc</groupId> -->
@@ -83,5 +171,10 @@
 		<!-- </dependency> -->
 
 	</dependencies>
+	<properties>
+		<project.http.version>1.23.0</project.http.version>
+		<project.oauth.version>1.23.0</project.oauth.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 </project>

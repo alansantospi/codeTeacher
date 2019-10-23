@@ -7,6 +7,7 @@ import java.util.Map;
 
 import codeteacher.err.Error;
 import codeteacher.err.ErrorFixer;
+import codeteacher.err.IErrorType;
 
 public class Performance {
 	
@@ -17,9 +18,13 @@ public class Performance {
 	private Map<String, String> aliases = new HashMap<String, String>();
 	private String solutionPath;
 	
-	public Performance(String student) {
-		this.setStudent(student);
+	public Performance() {
 		errors = new ArrayList<Error>();
+	}
+	
+	public Performance(String student) {
+		this();
+		this.setStudent(student);
 	}
 
 	public String getStudent() {
@@ -28,6 +33,11 @@ public class Performance {
 
 	public void setStudent(String student) {
 		this.student = student;
+	}
+	
+	public void addError(IErrorType errorType){
+		Error error = new Error(errorType);
+		errors.add(error);
 	}
 	
 	public void addError(Error error){

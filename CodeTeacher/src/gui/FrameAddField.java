@@ -9,19 +9,14 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.function.BiPredicate;
 
-import javax.swing.AbstractSpinnerModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
-import javax.swing.SpinnerDateModel;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -49,8 +44,8 @@ import codeteacher.analyzers.Analyzer;
 import codeteacher.analyzers.ClassAnalyzer;
 import codeteacher.analyzers.CompositeAnalyzer;
 import codeteacher.analyzers.FieldAnalyzer;
-import codeteacher.analyzers.FieldModifierAnalyzer;
 import codeteacher.analyzers.FinalFieldAnalyzer;
+import codeteacher.analyzers.ModifierAnalyzer;
 import codeteacher.analyzers.PrivateFieldAnalyzer;
 import codeteacher.analyzers.ProtectedFieldAnalyzer;
 import codeteacher.analyzers.PublicFieldAnalyzer;
@@ -481,8 +476,8 @@ public class FrameAddField extends WebFrame implements ActionListener {
 			String fieldName = fieldAnalyzer.getMemberName();
 			txtFieldName.setText(fieldName);
 
-			List<FieldModifierAnalyzer> modifiers = fieldAnalyzer.getChildren();
-			for (FieldModifierAnalyzer modifier : modifiers) {
+			List<ModifierAnalyzer> modifiers = fieldAnalyzer.getChildren();
+			for (ModifierAnalyzer modifier : modifiers) {
 				if (modifier instanceof PrivateFieldAnalyzer) {
 					comboFieldModifier.setSelectedItem(I18N.getVal(msg.PRIVATE));
 				} else if (modifier instanceof ProtectedFieldAnalyzer) {

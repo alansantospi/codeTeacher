@@ -29,9 +29,9 @@ public class TestThrowsAnalyzer {
 	private boolean matchCase;
 	private int value;
 	private boolean expected;
-	private String[] expectedExceptions;
+	private String expectedExceptions;
 	
-	public TestThrowsAnalyzer(String testCase, boolean declared, String returnType, String name, boolean matchCase, boolean regex, int value, boolean expected, String... exceptions) {
+	public TestThrowsAnalyzer(String testCase, boolean declared, String returnType, String name, boolean matchCase, boolean regex, int value, boolean expected, String exceptions) {
 		super();
 		this.testCase = testCase;
 		this.declared = declared;
@@ -53,17 +53,16 @@ public class TestThrowsAnalyzer {
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
 			/* Test case												declared  returnType    methodName	case   regex  value expected exceptions*/
-			{ "Any exception - Check any exception.", 			  			true, "void", 		"method1",	false, false,  1, 	false,   new String[0]},
-			{ "Any exception - Check one exception.", 		 	  			true, "void", 		"method1",	false, false,  2, 	true,    new String[]{"Exception"}},
-			{ "Any exception - Check two exception.", 		 	  			true, "void", 		"method1",	false, false,  2, 	true,    new String[]{"Exception","NullPointerException"}},
-			{ "Single exception - Check any exception.", 	  				true, "void", 		"method2",	false, false,  2, 	false,    new String[0]},
-			{ "Single exception - Check one matching exception.", 	  		true, "void", 		"method2",	false, false,  2, 	false,   new String[]{"Exception"}},
-			{ "Single exception - Check one unmatching exception.", 		true, "void", 		"method2",	false, false,  2, 	true,    new String[]{"ArrayIndexOutOfBoundsException"}},
+			{ "Any exception - Check any exception.", 			  			true, "void", 		"method1",	false, false,  1, 	false,   ""},
+			{ "Any exception - Check one exception.", 		 	  			true, "void", 		"method1",	false, false,  2, 	true,    "Exception"},
+			{ "Any exception - Check two exception.", 		 	  			true, "void", 		"method1",	false, false,  2, 	true,    "Exception"},
+			{ "Single exception - Check one matching exception.", 	  		true, "void", 		"method2",	false, false,  2, 	false,   "NullPointerException"},
+			{ "Single exception - Check one unmatching exception.", 		true, "void", 		"method2",	false, false,  2, 	true,    "ArrayIndexOutOfBoundsException"},
 			{ "More than one exception - Check any exception.",  			true, "void", 		"method3",	false, false,  2, 	false,    new String[0]},
-			{ "More than one exception - Check one matching exception.",	true, "void", 		"method3",	false, false,  2, 	false,   new String[]{"RuntimeException"}},
-			{ "More than one exception - Check one unmatching exception.",  true, "void", 		"method3",	false, false,  2, 	true,    new String[]{"NullPointerException"}},
-			{ "More than one exception - Check two matching exceptions.",   true, "void", 		"method3",	false, false,  2, 	false,    new String[]{"RuntimeException", "IOException"}},
-			{ "More than one exception - Check two unmatching exceptions.", true, "void", 		"method3",	false, false,  2, 	true,    new String[]{"NullPointerException", "InterruptedException"}},
+			{ "More than one exception - Check one matching exception.",	true, "void", 		"method3",	false, false,  2, 	false,   "RuntimeException"},
+			{ "More than one exception - Check one unmatching exception.",  true, "void", 		"method3",	false, false,  2, 	true,    "NullPointerException"},
+			{ "More than one exception - Check two matching exceptions.",   true, "void", 		"method3",	false, false,  2, 	false,    "RuntimeException", "IOException"},
+			{ "More than one exception - Check two unmatching exceptions.", true, "void", 		"method3",	false, false,  2, 	true,    "NullPointerException", "InterruptedException"},
 //			
 		});
 	}
@@ -87,7 +86,7 @@ public class TestThrowsAnalyzer {
 		MethodAnalyzer methodAnalyzr = new MethodAnalyzer(classAnalyzer, declared, returnType, name, matchCase, regex, methodValue, paramTypes);
 		assertFalse(testCase, methodAnalyzr.isError());
 		
-		ThrowsAnalyzer throwsAnalyzer = new ThrowsAnalyzer(methodAnalyzr, matchCase, regex, value, expectedExceptions); 
+		ThrowsAnalyzer throwsAnalyzer = new ThrowsAnalyzer(methodAnalyzr, expectedExceptions, matchCase, regex, value); 
 		
 //		assertEquals(testCase, name, throwsAnalyzer.getMemberName());
 		assertEquals(testCase, matchCase, throwsAnalyzer.isMatchCase());
@@ -114,7 +113,7 @@ public class TestThrowsAnalyzer {
 		MethodAnalyzer methodAnalyzr = new MethodAnalyzer(classAnalyzer, declared, returnType, name, matchCase, regex, methodValue, paramTypes);
 		assertFalse(testCase, methodAnalyzr.isError());
 		
-		ThrowsAnalyzer throwsAnalyzer = new ThrowsAnalyzer(methodAnalyzr, matchCase, regex, value, expectedExceptions); 
+		ThrowsAnalyzer throwsAnalyzer = new ThrowsAnalyzer(methodAnalyzr, expectedExceptions, matchCase, regex, value); 
 		
 		boolean actual = throwsAnalyzer.isError();
 		assertEquals(testCase, expected, actual);

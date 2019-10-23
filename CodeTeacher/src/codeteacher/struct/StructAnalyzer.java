@@ -89,10 +89,7 @@ public class StructAnalyzer implements Analyzer {
 	}
 	
 	@Override
-	public boolean isError() throws IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException {
-		
+	public boolean isError() {		
 		return evaluator.eval();
 	}
 

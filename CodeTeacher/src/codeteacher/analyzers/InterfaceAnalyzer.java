@@ -15,8 +15,7 @@ public class InterfaceAnalyzer extends AbstractAnalyzer{
 	}
 
 	@Override
-	public boolean isError()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public boolean isError() {
 		return parent.getKlazz().isInterface();
 	}
 

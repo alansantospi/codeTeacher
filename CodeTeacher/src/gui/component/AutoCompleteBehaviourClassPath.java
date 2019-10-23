@@ -41,8 +41,8 @@ public class AutoCompleteBehaviourClassPath {
         }
     }
     
-    private static Klazz person(String name, String email) {
-        return new Klazz(name,email);
+    private static Klazz parse(String name, String fullName) {
+        return new Klazz(name,fullName);
 
     }
     
@@ -74,7 +74,7 @@ public class AutoCompleteBehaviourClassPath {
                 List<String> match = ClassPathUtils.match(input);
                 for (String klazzName : match) {
                 	String name = klazzName.substring(klazzName.lastIndexOf(".") + 1);
-					choices.add(person(name, klazzName));
+					choices.add(parse(name, klazzName));
 				}
 
                 for ( Klazz c : choices ) {
@@ -155,7 +155,7 @@ public class AutoCompleteBehaviourClassPath {
                         List<String> match = ClassPathUtils.match(input);
                         for (String klazzName : match) {
                         	String name = klazzName.substring(klazzName.lastIndexOf(".") + 1);
-							choices.add(person(name, klazzName));
+							choices.add(parse(name, klazzName));
 						}
 
                         for ( Klazz c : choices ) {
@@ -177,7 +177,7 @@ public class AutoCompleteBehaviourClassPath {
                     public Component getListCellRendererComponent( JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                         final Component result = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-                        final Klazz p = (Klazz) value;
+                        final Klazz p = (Klazz) value; 
 
                         setText( p.name+" - "+p.canonicalName );
 

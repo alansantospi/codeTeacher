@@ -7,7 +7,7 @@ import codeteacher.err.Error;
 
 public interface Analyzer extends Serializable {
 
-	public boolean isError() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException;
+	public boolean isError();
 
 	public Error getError();
 	

@@ -31,12 +31,15 @@ public class FrameAddType extends WebFrame {
 		// Simple tab
 		tabbedPane.addTab("Type", new PanelAddType(previous));
 
-		// Disabled tab
 		tabbedPane.addTab("Fields", new PanelAddField2(previous));
-//		tabbedPane.setEnabledAt(1, false);
-
-		// Selected tab
 		tabbedPane.addTab("Methods", new PanelAddMethod(previous));
+		tabbedPane.addTab("Tests", new PanelAddTest(previous));
+		tabbedPane.addTab("Metrics", new PanelAddTest(previous));
+		
+		// Disabled tab
+//		tabbedPane.setEnabledAt(1, false);
+		
+		// Selected tab
 		tabbedPane.setSelectedIndex(0);
 
 		// Colored tab
@@ -57,4 +60,5 @@ public class FrameAddType extends WebFrame {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
+	
 }

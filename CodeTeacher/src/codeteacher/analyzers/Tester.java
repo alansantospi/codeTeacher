@@ -106,18 +106,10 @@ public class Tester {
 							}
 						}
 					}
-					try {
 						if (analyzer.isError()) {
 							Error error = analyzer.getError();
 							perform.addError(error);
 						}
-					} catch (IllegalAccessException e) {
-						// TODO Contabilizar todos os pontos envolvendo este método
-					} catch (IllegalArgumentException e) {
-						// TODO Contabilizar todos os pontos envolvendo este método
-					} catch (InvocationTargetException e) {
-						// TODO Contabilizar todos os pontos envolvendo este método
-					} catch (NoSuchMethodException e) {
 						// Contabilizando todos os pontos envolvendo este método
 						List<Analyzer> klazzList = testSearch.get(klazzName);
 						int value = 0;
@@ -138,7 +130,6 @@ public class Tester {
 						Error error = new Error(errorType, errorType.getMessage(methodNameWithParams, klazzName),
 								value);
 						perform.addError(error);
-					}
 				}
 			}
 		}
@@ -267,17 +258,12 @@ public class Tester {
 						} else if (testCase instanceof OutputAnalyzer) {
 							((OutputAnalyzer) testCase).setKlazz(baseClazz);
 						}
-						try {
-							if (testCase.isError()) {
+						if (testCase.isError()) {
 
-								Error error = testCase.getError();
-								perform.addError(error);
-							}
-						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-								| NoSuchMethodException e) {
-							// TODO Contabilizar todos os pontos envolvendo este método
-//							e.printStackTrace();
+							Error error = testCase.getError();
+							perform.addError(error);
 						}
+						// TODO Contabilizar todos os pontos envolvendo este método
 					}
 				}
 			} catch (ClassNotFoundException e) {

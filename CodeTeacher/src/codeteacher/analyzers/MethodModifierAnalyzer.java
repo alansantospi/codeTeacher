@@ -1,14 +1,11 @@
 package codeteacher.analyzers;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 
 import codeteacher.err.Error;
 import codeteacher.err.ErrorType;
 
-public abstract class MethodModifierAnalyzer extends SimpleAnalyzer {
+public abstract class MethodModifierAnalyzer extends ModifierAnalyzer {
 
 	private MethodAnalyzer parent;
 
@@ -18,8 +15,7 @@ public abstract class MethodModifierAnalyzer extends SimpleAnalyzer {
 	}
 
 	@Override
-	public boolean isError()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public boolean isError() {
 		return !check();
 	}
 
@@ -53,7 +49,7 @@ public abstract class MethodModifierAnalyzer extends SimpleAnalyzer {
 	public Error getError() {
 		ErrorType errorType = getErrorType();
 		String className = parent.getParent().getMemberName();
-		String msg = errorType.getMessage(parent.getMemberName(), className);
+		String msg = errorType.getMessage(parent.toString(), className, getModifier());
 		return new Error(errorType, msg, getValue());
 	}
 

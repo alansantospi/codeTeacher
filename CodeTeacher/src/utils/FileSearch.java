@@ -3,8 +3,11 @@ package utils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileSearch {
 
@@ -48,6 +51,14 @@ public class FileSearch {
 
 	public List<File> getResult() {
 		return result;
+	}
+	
+	public Map<Object, Object> getResultMap(){
+		return result.stream().map( e -> e.toString() ).collect(Collectors.toMap(x -> x.toString(), x -> x));
+	}
+	
+	public List<String> getResultString(){
+		return result.stream().map( e -> e.toString() ).collect( Collectors.toList() );
 	}
 
 	public void searchDirectory(File file, String fileNameToSearch) {

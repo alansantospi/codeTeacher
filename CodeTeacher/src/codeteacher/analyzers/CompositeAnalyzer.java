@@ -38,8 +38,7 @@ public class CompositeAnalyzer<T extends AbstractAnalyzer> extends AbstractAnaly
 	}
 
 	@Override
-	public boolean isError()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public boolean isError() {
 		return false;
 	}
 

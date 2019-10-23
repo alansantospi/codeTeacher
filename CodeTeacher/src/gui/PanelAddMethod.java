@@ -7,9 +7,8 @@ import static gui.msg.FrameAddOutputMsg.CASE_SENSITIVE;
 import static gui.msg.FrameAddOutputMsg.CLEAR;
 import static gui.msg.FrameAddOutputMsg.DEFAULT;
 import static gui.msg.FrameAddOutputMsg.EXCEPTIONS;
-import static gui.msg.FrameAddOutputMsg.FIELD_NAME;
-import static gui.msg.FrameAddOutputMsg.FIELD_TYPE;
 import static gui.msg.FrameAddOutputMsg.FINAL;
+import static gui.msg.FrameAddOutputMsg.METHOD_NAME;
 import static gui.msg.FrameAddOutputMsg.MSG_CLASS_NAME_MISSING;
 import static gui.msg.FrameAddOutputMsg.MSG_FIELD_NAME_MISSING;
 import static gui.msg.FrameAddOutputMsg.MSG_FIELD_TYPE_MISSING;
@@ -22,6 +21,7 @@ import static gui.msg.FrameAddOutputMsg.PROTECTED;
 import static gui.msg.FrameAddOutputMsg.PUBLIC;
 import static gui.msg.FrameAddOutputMsg.REGEX;
 import static gui.msg.FrameAddOutputMsg.REMOVE;
+import static gui.msg.FrameAddOutputMsg.RETURN_TYPE;
 import static gui.msg.FrameAddOutputMsg.STATIC;
 import static gui.msg.FrameAddOutputMsg.UP;
 
@@ -69,8 +69,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.commons.io.output.ThresholdingOutputStream;
-
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
@@ -80,16 +78,21 @@ import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.spinner.WebSpinner;
 import com.alee.laf.text.WebTextField;
 
+import codeteacher.analyzers.AbstractMethodAnalyzer;
 import codeteacher.analyzers.ClassAnalyzer;
+import codeteacher.analyzers.FinalMethodAnalyzer;
 import codeteacher.analyzers.MethodAnalyzer;
 import codeteacher.analyzers.OutputAnalyzer;
 import codeteacher.analyzers.PrivateMethodAnalyzer;
 import codeteacher.analyzers.ProtectedMethodAnalyzer;
 import codeteacher.analyzers.PublicMethodAnalyzer;
+import codeteacher.analyzers.StaticMethodAnalyzer;
+import codeteacher.analyzers.ThrowsAnalyzer;
 import gui.component.AutoComboBox;
 import gui.component.AutoCompleteBehaviourClassPath;
 import gui.component.Autocomplete;
 import gui.component.ComponentUtils;
+import gui.component.table.ThrowsAnalyzerModel;
 import gui.msg.FrameAddOutputMsg;
 import gui.msg.I18N;
 import utils.ClassPathUtils;
@@ -139,7 +142,6 @@ public class PanelAddMethod extends WebPanel {
 	private JLabel lblClassName;
 	private JTextField txtClassName;
 	private JLabel lblValue;
-	private JTextField txtValue;
 	private JCheckBox chkClassRegex;
 	private JCheckBox chkClassCase;
 	private JCheckBox chkMethodCase;
@@ -165,7 +167,6 @@ public class PanelAddMethod extends WebPanel {
 	private JPanel pnlIgnore;
 	private JCheckBox chkExtraSpaces;
 	private JCheckBox chkLineBreaks;
-	private JPanel pnlValue;
 
 	private AutoComboBox autoComboBox;
 	private JEditorPane editorPane;
@@ -181,6 +182,8 @@ public class PanelAddMethod extends WebPanel {
 	private WebCheckBox chkMatchCase;
 
 	private WebSpinner spinAbstract;
+
+	private PanelAddAnalyzer<ThrowsAnalyzer> pnlExceptions;
 
 	/**
 	 * Launch the application.
@@ -208,46 +211,18 @@ public class PanelAddMethod extends WebPanel {
 	 * @wbp.parser.constructor
 	 */
 	public PanelAddMethod(final FrameTestField previousFrame) {
+		super();
 		this.previous = previousFrame;
+	}
+	
+	public PanelAddMethod() {
+		
 		this.thisPanel = this;
 		setBounds(100, 100, 742, 552);
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		GridBagLayout gbl_contentPane = new GridBagLayout();
 		gbl_contentPane.rowHeights = new int[] { 0, 0, 221, 0, 0 };
 		setLayout(gbl_contentPane);
-
-		pnlValue = new JPanel();
-		GridBagConstraints gbc_Value = new GridBagConstraints();
-		gbc_Value.anchor = GridBagConstraints.EAST;
-		gbc_Value.gridwidth = 6;
-		gbc_Value.insets = new Insets(0, 0, 5, 0);
-		gbc_Value.fill = GridBagConstraints.VERTICAL;
-		gbc_Value.gridx = 0;
-		gbc_Value.gridy = 0;
-		add(pnlValue, gbc_Value);
-		GridBagLayout gbl_Value = new GridBagLayout();
-		gbl_Value.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 51, 0 };
-		gbl_Value.rowHeights = new int[] { 0, 0 };
-		gbl_Value.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gbl_Value.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
-		pnlValue.setLayout(gbl_Value);
-
-		lblValue = new JLabel("Value");
-		GridBagConstraints gbc_lblValue = new GridBagConstraints();
-		gbc_lblValue.insets = new Insets(0, 0, 0, 5);
-		gbc_lblValue.gridx = 16;
-		gbc_lblValue.gridy = 0;
-		pnlValue.add(lblValue, gbc_lblValue);
-
-		txtValue = new JTextField();
-		txtValue.setColumns(10);
-		GridBagConstraints gbc_txtValue = new GridBagConstraints();
-		gbc_txtValue.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txtValue.gridx = 17;
-		gbc_txtValue.gridy = 0;
-		pnlValue.add(txtValue, gbc_txtValue);
-		txtValue.getDocument().addDocumentListener(new ChangeListener());
 
 		pnlClass = new JPanel();
 		pnlClass.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -319,23 +294,25 @@ public class PanelAddMethod extends WebPanel {
 		gbl_pnlMethods.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		pnlMethods.setLayout(gbl_pnlMethods);
 
-		lblMethodModifier = new WebLabel(I18N.getVal(ACCESS_MODIFIER));
+		lblMethodModifier = new WebLabel(I18N.getVal(ACCESS_MODIFIER), SwingConstants.CENTER);
 		GridBagConstraints gbc_lblMethodModifier = new GridBagConstraints();
-		gbc_lblMethodModifier.anchor = GridBagConstraints.WEST;
+		gbc_lblMethodModifier.anchor = GridBagConstraints.EAST;
 		gbc_lblMethodModifier.insets = new Insets(0, 0, 5, 5);
 		gbc_lblMethodModifier.gridx = 1;
 		gbc_lblMethodModifier.gridy = 0;
+		lblMethodModifier.setHorizontalAlignment(SwingConstants.RIGHT);
 		pnlMethods.add(lblMethodModifier, gbc_lblMethodModifier);
 
 		comboModifier = new WebComboBox();
-		GridBagConstraints gbc_comboBox = new GridBagConstraints();
-		gbc_comboBox.gridwidth = 3;
-		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
-		gbc_comboBox.gridx = 2;
-		gbc_comboBox.gridy = 0;
+		GridBagConstraints gbc_comboModifier = new GridBagConstraints();
+		gbc_comboModifier.anchor = GridBagConstraints.EAST;
+		gbc_comboModifier.gridwidth = 3;
+		gbc_comboModifier.insets = new Insets(0, 0, 5, 5);
+		gbc_comboModifier.gridx = 2;
+		gbc_comboModifier.gridy = 0;
 		comboModifier.setModel(new DefaultComboBoxModel(new String[] { I18N.getVal(PRIVATE), I18N.getVal(PUBLIC),
 				I18N.getVal(PROTECTED), I18N.getVal(DEFAULT) }));
-		pnlMethods.add(comboModifier, gbc_comboBox);
+		pnlMethods.add(comboModifier, gbc_comboModifier);
 
 		spinVisibility = new WebSpinner();
 		formatSpinner(spinVisibility);
@@ -348,17 +325,23 @@ public class PanelAddMethod extends WebPanel {
 		pnlMethods.add(spinVisibility, gbc_spinVisibility);
 
 		chkStatic = new WebCheckBox(I18N.getVal(STATIC));
-		chkStatic.setHorizontalAlignment(SwingConstants.LEFT);
+		chkStatic.setHorizontalAlignment(SwingConstants.RIGHT);
 //		chkMethodStatic.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		GridBagConstraints gbc_chkMethodStatic = new GridBagConstraints();
-		gbc_chkMethodStatic.anchor = GridBagConstraints.WEST;
+		gbc_chkMethodStatic.anchor = GridBagConstraints.EAST;
 		gbc_chkMethodStatic.insets = new Insets(0, 0, 5, 5);
 		gbc_chkMethodStatic.gridx = 4;
 		gbc_chkMethodStatic.gridy = 1;
 		pnlMethods.add(chkStatic, gbc_chkMethodStatic);
+//		pnlMethods.add(chkStatic, GridBagConstraints.SOUTH);
 
+//		pnlMethods.setAlignmentX(RIGHT_ALIGNMENT);
+//		chkStatic.setAlignmentX(LEFT_ALIGNMENT); 
+		
+		
 		spinStatic = new WebSpinner();
 		formatSpinner(spinStatic);
+//		spinStatic.setEnabled(chkStatic.isSelected());
 		GridBagConstraints gbc_spinStatic = new GridBagConstraints();
 		gbc_spinStatic.gridwidth = 2;
 		gbc_spinStatic.insets = new Insets(0, 0, 5, 5);
@@ -367,10 +350,10 @@ public class PanelAddMethod extends WebPanel {
 		pnlMethods.add(spinStatic, gbc_spinStatic);
 
 		chkFinal = new WebCheckBox(I18N.getVal(FINAL));
-		chkFinal.setHorizontalAlignment(SwingConstants.LEFT);
+		chkFinal.setHorizontalAlignment(SwingConstants.RIGHT);
 //		chkMethodFinal.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		GridBagConstraints gbc_chkMethodFinal = new GridBagConstraints();
-		gbc_chkMethodFinal.anchor = GridBagConstraints.WEST;
+		gbc_chkMethodFinal.anchor = GridBagConstraints.EAST;
 		gbc_chkMethodFinal.insets = new Insets(0, 0, 5, 5);
 		gbc_chkMethodFinal.gridx = 4;
 		gbc_chkMethodFinal.gridy = 2;
@@ -378,6 +361,7 @@ public class PanelAddMethod extends WebPanel {
 
 		spinFinal = new WebSpinner();
 		formatSpinner(spinFinal);
+		spinFinal.setEnabled(chkFinal.isSelected());
 		GridBagConstraints gbc_spinFinal = new GridBagConstraints();
 		gbc_spinFinal.gridwidth = 2;
 		gbc_spinFinal.insets = new Insets(0, 0, 5, 5);
@@ -386,10 +370,10 @@ public class PanelAddMethod extends WebPanel {
 		pnlMethods.add(spinFinal, gbc_spinFinal);
 
 		chkAbstract = new WebCheckBox(I18N.getVal(ABSTRACT));
-		chkAbstract.setHorizontalAlignment(SwingConstants.LEFT);
+		chkAbstract.setHorizontalAlignment(SwingConstants.RIGHT);
 //		chkMethodFinal.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		GridBagConstraints gbc_chkAbstract = new GridBagConstraints();
-		gbc_chkAbstract.anchor = GridBagConstraints.WEST;
+		gbc_chkAbstract.anchor = GridBagConstraints.EAST;
 		gbc_chkAbstract.insets = new Insets(0, 0, 5, 5);
 		gbc_chkAbstract.gridx = 4;
 		gbc_chkAbstract.gridy = 3;
@@ -404,9 +388,10 @@ public class PanelAddMethod extends WebPanel {
 		gbc_spinAbstract.gridy = 3;
 		pnlMethods.add(spinAbstract, gbc_spinAbstract);
 
-		lblMethodType = new WebLabel(I18N.getVal(FIELD_TYPE));
+		lblMethodType = new WebLabel(I18N.getVal(RETURN_TYPE));
+		lblMethodType.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_lblMethodType = new GridBagConstraints();
-		gbc_lblMethodType.anchor = GridBagConstraints.WEST;
+		gbc_lblMethodType.anchor = GridBagConstraints.EAST;
 		gbc_lblMethodType.insets = new Insets(0, 0, 5, 5);
 		gbc_lblMethodType.gridx = 1;
 		gbc_lblMethodType.gridy = 4;
@@ -432,7 +417,7 @@ public class PanelAddMethod extends WebPanel {
 		gbc_spinMethodType.gridy = 4;
 		pnlMethods.add(spinMethodType, gbc_spinMethodType);
 
-		lblMethodName = new WebLabel(I18N.getVal(FIELD_NAME));
+		lblMethodName = new WebLabel(I18N.getVal(METHOD_NAME));
 		GridBagConstraints gbc_lblMethodName = new GridBagConstraints();
 		gbc_lblMethodName.anchor = GridBagConstraints.WEST;
 		gbc_lblMethodName.insets = new Insets(0, 0, 5, 5);
@@ -523,8 +508,32 @@ public class PanelAddMethod extends WebPanel {
 		tabbedPane.addTab("Methods", null, pnlMethods, null);
 		JPanel pnlParams = new JPanel();
 		tabbedPane.addTab(I18N.getVal(PARAMS), null, pnlParams, null);
+
+//		PanelException pnlExceptions = new PanelException(null);
 		
-		JPanel pnlExceptions = new PanelException(null);
+		pnlExceptions = new PanelAddAnalyzer<>(ThrowsAnalyzer.class);
+		pnlExceptions.btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WebFrame frame = new WebFrame();
+				PanelAddException contentPane = new PanelAddException(pnlExceptions);
+				frame.setContentPane(contentPane);
+				
+				contentPane.addAction(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						ThrowsAnalyzer analyzer = contentPane.createThrowsAnalyzer();
+						pnlExceptions.addAnalyzer(analyzer);
+						pnlExceptions.updateButtons();
+					}
+				});
+				frame.pack();
+				frame.center();
+				frame.setVisible(true);
+			}
+		});
+
+		
+		
 		tabbedPane.addTab(I18N.getVal(EXCEPTIONS), null, pnlExceptions, null);
 
 		JScrollPane scrollPane_2 = new JScrollPane();
@@ -768,6 +777,14 @@ public class PanelAddMethod extends WebPanel {
 
 		/* Adding listeners... */
 
+		btnOk.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MethodAnalyzer createAnalyzer = createAnalyzer();
+				
+			}
+		});
+
 		comboModifier.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -775,40 +792,10 @@ public class PanelAddMethod extends WebPanel {
 			}
 		});
 
-		chkStatic.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				boolean checked = chkStatic.isSelected();
-				if (checked) {
-					chkAbstract.setSelected(false);
-				}
-				updatePreview();
-			}
-		});
-
-		chkFinal.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				boolean checked = chkFinal.isSelected();
-				if (checked) {
-					chkAbstract.setSelected(false);
-				}
-				updatePreview();
-			}
-		});
-
-		chkAbstract.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				boolean checked = chkAbstract.isSelected();
-				if (checked) {
-					chkFinal.setSelected(false);
-					chkStatic.setSelected(false);
-				}
-
-				updatePreview();
-			}
-		});
+		chkStatic.addActionListener(new UpdateMethodOptions());
+		chkFinal.addActionListener(new UpdateMethodOptions());
+		chkAbstract.addActionListener(new UpdateMethodOptions());
+		updateSpinners();
 
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -861,7 +848,7 @@ public class PanelAddMethod extends WebPanel {
 		tableParams.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-//				updatePreview();
+				updatePreview();
 			}
 		});
 
@@ -937,8 +924,6 @@ public class PanelAddMethod extends WebPanel {
 		chkClassRegex.setSelected(klazzRegex);
 		chkClassRecursive.setSelected(klazzRecursive);
 		chkClassCase.setSelected(klazzCaseSensitive);
-
-		txtValue.setText(String.valueOf(value));
 
 		Set<String> modifiers = out.getModifiers();
 
@@ -1066,15 +1051,44 @@ public class PanelAddMethod extends WebPanel {
 			chkMethodCase.setSelected(false);
 		} else if (source == chkMethodCase && chkMethodCase.isSelected()) {
 			chkMethodRegex.setSelected(false);
+		} else if (source == chkStatic) {
+			boolean selected = chkStatic.isSelected();
+			if (selected) {
+				chkAbstract.setSelected(false);
+				spinAbstract.setValue(0d);
+			}
+		} else if (source == chkAbstract) {
+			boolean selected = chkAbstract.isSelected();
+			if (selected) {
+				chkStatic.setSelected(false);
+				spinStatic.setValue(0d);
+				chkFinal.setSelected(false);
+				spinFinal.setValue(0d);
+			}
+		} else if (source == chkFinal) {
+			boolean selected = chkFinal.isSelected();
+			if (selected) {
+				chkAbstract.setSelected(false);
+				spinAbstract.setValue(0d);
+			} else {
+				spinFinal.setValue(0d);
+			}
 		}
+		updateSpinners();
+		updatePreview();
+
+	}
+
+	private void updateSpinners() {
+		spinStatic.setEnabled(chkStatic.isSelected());
+		spinFinal.setEnabled(chkFinal.isSelected());
+		spinAbstract.setEnabled(chkAbstract.isSelected());
 	}
 
 	private void updateButtons() {
 		methodName = txtMethodName.getText();
 		returnType = txtReturnType.getText();
-		String stringValue = txtValue.getText();
 		boolean hasName = methodName != null && !methodName.equals("");
-		boolean hasValue = stringValue != null && !stringValue.equals("");
 		boolean hasReturn = returnType != null && !returnType.equals("");
 		boolean isRowSelected = tableParams.getSelectedRow() >= 0;
 		boolean hasOutput = !textOutput.getText().isEmpty();
@@ -1083,7 +1097,7 @@ public class PanelAddMethod extends WebPanel {
 
 		boolean hasParams = tableParams.getModel().getRowCount() > 0;
 		boolean hasMoreThanOne = tableParams.getModel().getRowCount() > 1;
-		btnOk.setEnabled(hasValue && hasName && hasReturn && hasOutput);
+//		btnOk.setEnabled(hasValue && hasName && hasReturn && hasOutput);
 		btnRemove.setEnabled(hasParams && isRowSelected);
 		btnUp.setEnabled(hasMoreThanOne && isRowSelected);
 		btnDown.setEnabled(hasMoreThanOne && isRowSelected);
@@ -1094,7 +1108,7 @@ public class PanelAddMethod extends WebPanel {
 		ComponentUtils.addRow(tableParams, paramType, true, I18N.getVal(msg.PARAM_NAME));
 		updatePreview();
 	}
-	
+
 	public MethodAnalyzer getMethodAnalyzer() {
 		return methodAnalyzer;
 	}
@@ -1153,6 +1167,78 @@ public class PanelAddMethod extends WebPanel {
 		}
 	}
 
+	public MethodAnalyzer createAnalyzer() {
+		String className = txtClassName.getText();
+		String methodName = txtMethodName.getText();
+		String methodType = txtReturnType.getText();
+
+		boolean regex = chkClassRegex.isSelected();
+		boolean matchCase = chkClassCase.isSelected();
+		boolean recursive = chkClassRecursive.isSelected();
+		
+		ClassAnalyzer classAnalyzer = new ClassAnalyzer(className, recursive, matchCase, regex, 0);
+
+		boolean declared = false;
+		boolean methodRegex = chkMethodRegex.isSelected();
+		boolean methodCase = chkMethodCase.isSelected();
+		Double methodValue = (Double) spinMethodName.getValue();
+
+		
+		int rowCount = tableParams.getRowCount();
+		List<String> params = new ArrayList<String>();
+		for (int currentRow = 0; currentRow < rowCount; currentRow++) {
+			String param = (String) tableParams.getValueAt(currentRow, 0);
+
+			params.add(param);
+		}
+		
+		String[] paramArray = params.toArray(new String[0]);
+//		String parameterTypes = "";
+		methodAnalyzer = new MethodAnalyzer(classAnalyzer, declared, methodType, methodName, methodCase, methodRegex,
+				methodValue.intValue(), paramArray);
+
+		String visibility = (String) comboModifier.getSelectedItem();
+		Double visibilityValue = (Double) spinVisibility.getValue();
+		if (visibility.equals(PRIVATE.toString())) {
+			PrivateMethodAnalyzer privateMethodAnalyzer = new PrivateMethodAnalyzer(methodAnalyzer, visibilityValue.intValue());
+			methodAnalyzer.add(privateMethodAnalyzer);
+		} else if (visibility.equals(PROTECTED.toString())) {
+			ProtectedMethodAnalyzer protectedMethodAnalyzer = new ProtectedMethodAnalyzer(methodAnalyzer,
+					visibilityValue.intValue());
+			methodAnalyzer.add(protectedMethodAnalyzer);
+
+		} else if (visibility.equals(PUBLIC.toString())) {
+			PublicMethodAnalyzer publicMethodAnalyzer = new PublicMethodAnalyzer(methodAnalyzer, visibilityValue.intValue());
+			methodAnalyzer.add(publicMethodAnalyzer);
+		}
+		
+		if (chkStatic.isSelected()) {
+			Double staticValue = (Double) spinStatic.getValue();
+			StaticMethodAnalyzer staticMethodAnalyzer = new StaticMethodAnalyzer(methodAnalyzer, staticValue.intValue());
+			methodAnalyzer.add(staticMethodAnalyzer);
+		}
+
+		if (chkFinal.isSelected()) {
+			Double finalValue = (Double) spinFinal.getValue();
+			FinalMethodAnalyzer finalMethodAnalyzer = new FinalMethodAnalyzer(methodAnalyzer, finalValue.intValue());
+			methodAnalyzer.add(finalMethodAnalyzer);
+		}
+		
+		if (chkAbstract.isSelected()) {
+			Double finalValue = (Double) spinAbstract.getValue();
+			AbstractMethodAnalyzer abstractMethodAnalyzer = new AbstractMethodAnalyzer(methodAnalyzer, finalValue.intValue());
+			methodAnalyzer.add(abstractMethodAnalyzer);
+		}
+		
+		ThrowsAnalyzerModel implementsModel = (ThrowsAnalyzerModel) pnlExceptions.getModel();
+		for (int i = 0; i < implementsModel.getRowCount(); i++) {
+			ThrowsAnalyzer row = implementsModel.getRow(i);
+			methodAnalyzer.add(row);
+		}
+		
+		return methodAnalyzer;
+	}
+
 	class AddMethodListener implements ActionListener {
 
 		@Override
@@ -1185,8 +1271,8 @@ public class PanelAddMethod extends WebPanel {
 				int methodValue = spinMethodName.getRound();
 
 				String parameterTypes = "";
-				methodAnalyzer = new MethodAnalyzer(classAnalyzer, declared, methodType, methodName,
-						methodCase, methodRegex, methodValue, parameterTypes);
+				methodAnalyzer = new MethodAnalyzer(classAnalyzer, declared, methodType, methodName, methodCase,
+						methodRegex, methodValue, parameterTypes);
 
 				DefaultMutableTreeNode childNode = previous.addToTree(parentNode, methodAnalyzer);
 
@@ -1208,5 +1294,9 @@ public class PanelAddMethod extends WebPanel {
 				}
 			}
 		}
+	}
+
+	public void addAction(ActionListener actionListener) {
+		btnOk.addActionListener(actionListener);		
 	}
 }

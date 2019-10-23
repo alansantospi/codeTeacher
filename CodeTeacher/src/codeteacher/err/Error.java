@@ -1,29 +1,33 @@
 package codeteacher.err;
 
-public class Error {
+public class Error implements IError {
 	
 	private IErrorType type;
 	private String message;
 	private int value; 
 	
-	public Error(ErrorType type) {
+	public Error() {
+		
+	}
+	
+	public Error(IErrorType type) {
 		this.type = type;
 		this.message = type.getMessage();
 		this.value = type.getValue();
 	}
 	
-	public Error(ErrorType type, String message) {
+	public Error(IErrorType type, String message) {
 		this.type = type;
 		this.message = message;
 		this.value = type.getValue();
 	}
 	
-	public Error(ErrorType type, int value) {
+	public Error(IErrorType type, int value) {
 		this.type = type;
 		this.value = value;
 	}
 	
-	public Error(ErrorType type, String message, int value) {
+	public Error(IErrorType type, String message, int value) {
 		this(type, message);
 		this.value = value;
 	}

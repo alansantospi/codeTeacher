@@ -1,22 +1,20 @@
 package codeteacher.analyzers;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import codeteacher.DynamicURLClassLoader;
+import codeteacher.IClassLoader;
 import codeteacher.err.Action;
 import codeteacher.err.ClassAction;
 import codeteacher.err.Error;
 import codeteacher.err.ErrorFixer;
 import codeteacher.err.ErrorType;
 import codeteacher.result.Performance;
-import utils.FileSearch;
 import utils.ReflectionUtils;
 
-public class ClassAnalyzer extends CompositeAnalyzer<FieldAnalyzer> {
+public class ClassAnalyzer extends CompositeAnalyzer<AbstractAnalyzer> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -47,87 +45,62 @@ public class ClassAnalyzer extends CompositeAnalyzer<FieldAnalyzer> {
 		this.name = klazzName;
 	}
 
+	public ClassAnalyzer() {
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
-	public boolean isError()
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+	public boolean isError() {
 
 		if (perform == null) {
 			perform = new Performance(name);
 		}
 
-		String canonicalName = name;
-
-		URL[] locations = ((URLClassLoader) loader).getURLs();
-		URL url = locations[0];
-		String path = url.getFile();
-		File src = new File(path);
-		File srcAlias = src;
-		String alias = perform.getAlias(name);
-
-		if (alias != null) {
-			canonicalName = alias;
-			if (alias.contains(".")) {
-				alias = alias.substring(0, alias.lastIndexOf("."));
-				String separator = File.separator;
-				alias = alias.replaceAll("\\.", "\\" + separator);
-				srcAlias = new File(path + separator + alias);
-			}
+		if (loader == null) {
+			loader = new DynamicURLClassLoader((URLClassLoader) ClassLoader.getSystemClassLoader());
 		}
 
-		String simpleName = getSimpleName(canonicalName);
+		String canonicalName = name;
+		List<String> result = new ArrayList<>();
+		String alias = perform.getAlias(name);
 
-		FileSearch search = new FileSearch();
-		search.setCaseSensitive(matchCase);
-		search.setRecursive(recursive);
-		search.setRegex(regex);
-		search.searchDirectory(srcAlias, simpleName + ".class");
-		List<File> candidates = search.getResult();
-
-		if (candidates.isEmpty()) {
+		result = ((IClassLoader) loader).find(name, alias, recursive, regex, matchCase); 
+		
+		if (result.isEmpty()) {
 			ErrorType errorType = ErrorType.CLASS_NOT_FOUND;
 			Error error = new Error(errorType, errorType.getMessage(name));
 			perform.addError(error);
-//			continue;
-
+			
 			return true;
-
-		} else if (candidates.size() > 1) {
+			
+		} else if (result.size() > 1) {
 			ErrorType errorType = ErrorType.CLASS_UNDEFINED;
 			Error error = new Error(errorType, errorType.getMessage(name));
 			perform.addError(error);
 			List<Action> actions = new ArrayList<Action>();
 			ErrorFixer fix = new ErrorFixer(error, actions);
-			for (File candidate : candidates) {
-				canonicalName = getCanonicalName(src, candidate);
+			for (String candidate : result) {
+				canonicalName = ((IClassLoader) loader).getCanonicalName(candidate);
 				Action act = new ClassAction(fix, perform, canonicalName, name);
 				actions.add(act);
 			}
 			fix.getActions().addAll(actions);
 			perform.addErrorFixer(error, fix);
-
+			
 			return true;
+			
 		} else {
-			File f = candidates.get(0);
-			canonicalName = getCanonicalName(src, f);
+			
+			String name = result.get(0);
+			canonicalName = ((IClassLoader) loader).getCanonicalName(name);
+			
 			perform.addAlias(canonicalName, name);
 			try {
 				klazz = loader.loadClass(canonicalName);
 			} catch (ClassNotFoundException | NoClassDefFoundError e) {
-				// Contabilizando todos os pontos envolvendo esta classe
-//				List<Analyzer> list = testSearch.get(klazzName);
-				int value = 0;
-//
-//				if (list.size() == 1) {
-//					int errorValue = ErrorType.CLASS_NOT_FOUND.getValue();
-//					value += list.get(0).getValue() * errorValue;
-//				} else {
-//					for (Analyzer exec : list) {
-//						value += exec.getValue();
-//					}
-//				}
 				ErrorType errorType = ErrorType.CLASS_NOT_FOUND;
 				Error error = new Error(errorType, errorType.getMessage(name), value);
-
+				
 				perform.addError(error);
 				return true;
 			}
@@ -139,26 +112,6 @@ public class ClassAnalyzer extends CompositeAnalyzer<FieldAnalyzer> {
 		return recursive;
 	}
 
-	private String getSimpleName(String canonicalName) {
-		int beginIndex = canonicalName.lastIndexOf('.') + 1;
-		int endIndex = canonicalName.length();
-		String simpleName = canonicalName.substring(beginIndex, endIndex);
-		return simpleName;
-	}
-
-	private static String getCanonicalName(File src, File f) {
-		String canonicalName = "";
-
-		File parentFile = f.getParentFile();
-		while (!parentFile.equals(src)) {
-			canonicalName += parentFile.getName() + ".";
-			parentFile = parentFile.getParentFile();
-		}
-
-		canonicalName = canonicalName + f.getName().replace(".class", "");
-		return canonicalName;
-	}
-
 	@Override
 	public Error getError() {
 		ErrorType errorType = ErrorType.CLASS_NOT_FOUND;
@@ -166,8 +119,27 @@ public class ClassAnalyzer extends CompositeAnalyzer<FieldAnalyzer> {
 		return error;
 	}
 
-	public void addField(FieldAnalyzer child) {
+	public FieldAnalyzer addField(FieldAnalyzer child) {
 		add(child);
+		return child;
+	}
+	
+	public SuperClassAnalyzer addSuperClass(String superClassName, int value) {
+		SuperClassAnalyzer superClass = new SuperClassAnalyzer(this, superClassName, value);
+		add(superClass);
+		return superClass;
+	}
+
+	public ImplementsAnalyzer addInterface(String interfaceName, int value) {
+		ImplementsAnalyzer inter = new ImplementsAnalyzer(this, interfaceName, value);
+		add(inter);
+		return inter;
+	}
+	
+	public PublicClassAnalyzer addPublic(int value) {
+		PublicClassAnalyzer publicClassAnalyzer = new PublicClassAnalyzer(this, value);
+		add(publicClassAnalyzer);
+		return publicClassAnalyzer;
 	}
 
 	@Override
@@ -207,6 +179,10 @@ public class ClassAnalyzer extends CompositeAnalyzer<FieldAnalyzer> {
 			return false;
 		}
 		return true;
+	}
+
+	public void setRecursive(boolean recursive) {
+		this.recursive = recursive;		
 	}
 
 }
