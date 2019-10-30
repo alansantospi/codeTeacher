@@ -1,0 +1,27 @@
+- erro versão diferente java;
+- OK coringas para nomes de métodos
+- instanciação de objetos sem carregar a classes, para passar como parâmetro objetos que não estejam no classpath ou então criar mocks dessas classes
+- contabilização dos pontos
+- valoração dos casos de teste pelo usuário
+- relatório com tipos de erros mais recorrentes, percentual de acerto, aproveitamento, etc..
+- Salvamento e abertura dos TestSets
+- testes de casos pré-prontos para analisar ocorrências de uso de herança, polimorfismo, sobrecarga, encapsulamento, etc...
+- analise estrutural baseada em configuração
+- analises estrutural, comportamental e de saída baseada em um projeto base
+- painel de navegação pelas pastas a serem analisadas
+- exportar pra pdf, excel, csv...
+- análise de plágio
+- case sensitive na comparação de nomes de projetos, classes métodos e atributos
+- carregamento de classes independentemente de pacote, i.e., varrer todos os pacotes paraencontrar classes com o nome especificado
+- regex nos nomes de projetos, classes, atributos e métodos
+
+-criterio para definir um padrão de nomenclatura de métodos e atributos (ex.: usar regex par verificar se há membros fora do padrão camelCase)
+-criterio para avaliar a identação (semelhante ao criterio acima)
+-forma de estabelecer escopos para os criterios (projeto, pacote, classe, etc)
+
+-citerio para aceitar super e/ou subtipos nos métodos (argumentos e retornos) e atributos
+-buscar arquivos em um zip
+
+ python to java
+ https://github.com/johnhuang-cn/jpserve
+ https://github.com/ninia/jep
