@@ -2,24 +2,17 @@ package codeteacher.analyzers;
 
 import static org.junit.Assert.assertFalse;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipFile;
 
 import org.junit.Test;
 
 import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 
-import codeteacher.Config;
 import codeteacher.VirtualClassLoader;
-import gui.Project;
 import utils.UnzipUtils;
 
 public class TestClassAnalyzerVirtual {

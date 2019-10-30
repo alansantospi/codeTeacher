@@ -24,9 +24,6 @@ import codeteacher.analyzers.ClassAnalyzer;
 import codeteacher.analyzers.MethodCall;
 import codeteacher.behave.ConstructorCall;
 import codeteacher.result.Evaluation;
-import codeteacher.result.Performance;
-import gui.Project;
-import gui.strategy.FileStrategy;
 import net.sf.esfinge.classmock.ClassMock;
 import net.sf.esfinge.classmock.api.IClassWriter;
 import net.sf.esfinge.classmock.parse.ParseASM;
@@ -77,16 +74,16 @@ public class TestBehavioralAnalyzr {
 
 		Config cfg = new Config(studentDir, projectName);
 
-		Project proj = new Project(cfg, tests, caseSensitive, regex, recursive);
-
-		evalReturn = new FileStrategy().eval(proj);
-		// TODO calcular os criterios
-		Map<String, Performance> perforMap = evalReturn.getPerforMap();
-		for (String a : perforMap.keySet()) {
-			Performance performance = perforMap.get(a);
-			performance.calcHitsPercentage(Config.CRITERIA);
-		}
-		System.out.println(evalReturn);
+//		Project proj = new Project(cfg, tests, caseSensitive, regex, recursive);
+//
+//		evalReturn = new FileStrategy().eval(proj);
+//		// TODO calcular os criterios
+//		Map<String, Performance> perforMap = evalReturn.getPerforMap();
+//		for (String a : perforMap.keySet()) {
+//			Performance performance = perforMap.get(a);
+//			performance.calcHitsPercentage(Config.CRITERIA);
+//		}
+//		System.out.println(evalReturn);
 	}
 
 	@Rule

@@ -1,4 +1,4 @@
-package gui.msg;
+package codeteacher;
 
 import java.util.Locale;
 import java.util.ResourceBundle;

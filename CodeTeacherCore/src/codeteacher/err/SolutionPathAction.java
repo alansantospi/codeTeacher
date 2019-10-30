@@ -3,7 +3,6 @@ package codeteacher.err;
 import java.io.File;
 
 import codeteacher.result.Performance;
-import gui.Project;
 
 public class SolutionPathAction implements Action {
 

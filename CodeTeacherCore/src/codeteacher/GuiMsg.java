@@ -1,4 +1,4 @@
-package gui.msg;
+package codeteacher;
 
 public interface GuiMsg {
 

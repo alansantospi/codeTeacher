@@ -2,11 +2,8 @@ package codeteacher.err;
 
 import java.text.MessageFormat;
 
-import org.apache.commons.lang3.StringUtils;
-
-import gui.msg.GuiMsg;
-import gui.msg.I18N;
-import utils.ReflectionUtils;
+import codeteacher.GuiMsg;
+import codeteacher.I18N;
 
 public enum ErrorType implements IErrorType, GuiMsg {
 

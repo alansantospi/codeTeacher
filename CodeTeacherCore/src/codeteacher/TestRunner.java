@@ -1,6 +1,5 @@
-package gui;
+package codeteacher;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +7,6 @@ import codeteacher.analyzers.AbstractAnalyzer;
 import codeteacher.analyzers.Analyzer;
 import codeteacher.analyzers.CompositeAnalyzer;
 import codeteacher.err.Error;
-import codeteacher.err.ErrorType;
 import codeteacher.result.Performance;
 
 public class TestRunner {

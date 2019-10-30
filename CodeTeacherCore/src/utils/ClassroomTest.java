@@ -20,6 +20,7 @@ import com.google.api.services.classroom.model.StudentSubmission;
 import com.google.api.services.classroom.model.SubmissionHistory;
 import com.google.api.services.classroom.model.UserProfile;
 
+import codeteacher.TestRunner;
 import codeteacher.VirtualClassLoader;
 import codeteacher.analyzers.AbstractAnalyzer;
 import codeteacher.analyzers.Analyzer;
@@ -29,7 +30,6 @@ import codeteacher.analyzers.MethodAnalyzer;
 import codeteacher.analyzers.PrivateMethodAnalyzer;
 import codeteacher.analyzers.PublicMethodAnalyzer;
 import codeteacher.result.Performance;
-import gui.TestRunner;
 import utils.ClassroomService.CourseWorkState;
 import utils.ClassroomService.CourseWorkType;
 import utils.ClassroomService.CourseWorkUpdateMask;
